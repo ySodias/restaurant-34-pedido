@@ -1,0 +1,2 @@
+-- init.sql
+CREATE ROLE postgres WITH SUPERUSER LOGIN PASSWORD 'root';
