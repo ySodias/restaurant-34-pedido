@@ -1,0 +1,58 @@
+name: CI & CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_push:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 
+
+      - name: Get commit hash
+        id: get-commit-hash
+        run: echo "::set-output name=commit-hash::$(git rev-parse --short HEAD)"
+
+      - name: Get timestamp
+        id: get-timestamp
+        run: echo "::set-output name=timestamp::$(date +'%Y-%m-%d-%H-%M')"
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push the image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: restaurante-34-pedido
+          IMAGE_TAG: ${{ steps.get-commit-hash.outputs.commit-hash }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name restaurant-34-cluster --region us-east-1
+
+      - name: Deploy to EKS
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
+          IMAGE_TAG: ${{ steps.get-commit-hash.outputs.commit-hash }}
+        run: |
+          sed -i "s@image: 288728506391.dkr.ecr.us-east-1.amazonaws.com/restaurante-34-pedido:latest@image: 288728506391.dkr.ecr.us-east-1.amazonaws.com/restaurante-34-pedido:${IMAGE_TAG}@g" src/infra/manifests/deployment.yml && \
+          kubectl apply -f src/infra/manifests/deployment.yml
+          kubectl apply -f src/infra/manifests/service.yml
+      
