@@ -1,6 +1,7 @@
 import PedidoUseCase from "@/usecases/pedido/PedidoUseCase"
 import mockPedidoGateway from "./mocks/MockPedidoGateway";
 import mockProdutoDoPedidoGateway from "./mocks/MockProdutoDoPedidoGateway";
+import mockPagamentoGateway from "./mocks/MockPagamentoGateway";
 import { Pedido } from "@/entities/Pedido";
 import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
 import StatusPedido from "@/entities/StatusPedido";
@@ -10,7 +11,7 @@ describe("Pedido Use Case", () => {
     let pedidoUseCase: PedidoUseCase;
 
     beforeAll(async () => {
-        pedidoUseCase = new PedidoUseCase(mockProdutoDoPedidoGateway, mockPedidoGateway);
+        pedidoUseCase = new PedidoUseCase(mockProdutoDoPedidoGateway, mockPedidoGateway, mockPagamentoGateway);
     })
 
     afterAll(async () => {
@@ -85,8 +86,7 @@ describe("Pedido Use Case", () => {
       
         // Verifica se a resposta foi definida
         expect(response).toBeUndefined();
-      });
-      
+      });      
 
     it("executa delete", async () => {
 
@@ -94,8 +94,6 @@ describe("Pedido Use Case", () => {
 
         expect(pedido).toBeDefined();
     })
-
-
     
     it("executa update pedido finalizado", async () => {
         // Simula a execução do método para atualizar o status de um pedido para "Finalizado"
@@ -132,7 +130,7 @@ function criarPedidoFake(): Pedido {
     const pedido: Pedido = {
         id: 1,
         clienteId: 1,
-        pagamentoId: 1,
+        pagamentoId: "1",
         statusPedidoId: 1,
         statusPedido: { id: 1, enumerador: "Em Preparação" } as StatusPedido,
         ProdutosDoPedido: [

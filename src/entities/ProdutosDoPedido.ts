@@ -1,11 +1,9 @@
-import {Produto} from "./Produto";
 import {Pedido} from "./Pedido";
 import { BaseEntity } from "./BaseEntity";
 
 interface ProdutosDoPedido extends BaseEntity{
     id: number;
     produtoId: number;
-    produto: Produto;
     pedidoId: number;
     pedido: Pedido;
     quantidade: number;
