@@ -1,0 +1,65 @@
+version: "3"
+
+services:
+    postgres:
+        container_name: db-restaurante-34-pedidos
+        hostname: db-restaurante-34-pedidos
+        image: postgres:latest
+        ports:
+            - "5432:5432"
+        expose:
+            - 5432
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+            POSTGRES_PORT: 5432
+        volumes:
+            - pg_data:/var/lib/postgresql/data
+        networks:
+            - default
+        deploy:
+            resources:
+             limits:
+                cpus: "0.5"   # Limit to 50% of one CPU core
+                memory: 512M
+
+    api:
+        container_name: restaurante-34-api-pedidos
+        hostname: restaurante-34-api-pedidos
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "3001:3001"
+        expose:
+            - 3001
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: root
+            POSTGRES_PASSWORD: root
+            POSTGRES_HOST: postgres
+            POSTGRES_PORT: 5432
+            DB_NAME: postgres
+            #COGNITO_JWKS_URL: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_2iqIrXWTh/.well-known/jwks.json
+            #DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${DB_NAME}?schema=public"
+            #DATABASE_URL: "postgresql://root:root@0.0.0.0:5431/postgres?schema=public"
+        volumes:
+            - pg_data:/var/lib/postgresql/data
+        networks:
+            - default
+        restart: always
+        deploy:
+            resources:
+             limits:
+                cpus: "0.5"   # Limit to 50% of one CPU core
+                memory: 512M
+        depends_on:
+            - postgres
+
+networks:
+    default:
+        driver: bridge
+
+volumes:
+    pg_data:
