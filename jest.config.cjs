@@ -8,5 +8,5 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   setupFilesAfterEnv: ['./src/__tests/jest.setup.ts'],
-  coveragePathIgnorePatterns: ['<rootDir>/src/__tests/*', '<rootDir>/src/external/http/*', '<rootDir>/src/enums/*']
+  coveragePathIgnorePatterns: ['<rootDir>/src/__tests/*', '<rootDir>/src/external/http/*']
 };
