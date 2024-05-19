@@ -1,12 +1,12 @@
-import { NovoPagamentoDTO } from "@/dtos/NovoPagamentoDTO";
-import { ProdutosDoPedidoDTO } from "@/dtos/ProdutosDoPedidoDTO";
-import { Pedido } from "@/entities/Pedido";
-import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
-import { EnumStatusPedido } from "@/enums/EnumStatusPedido";
-import { TipoPagamento } from "@/enums/TipoPagamento";
-import { IPedidoGateway, IPedidoUseCase, IProdutoDoPedidoGateway } from "@/interfaces";
-import { IPagamentoGateway } from "@/interfaces/gateway/IPagamentoGateway";
-import { IProdutoGateway } from "@/interfaces/gateway/IProdutoGateway";
+import { NovoPagamentoDTO } from "../../dtos/NovoPagamentoDTO";
+import { ProdutosDoPedidoDTO } from "../../dtos/ProdutosDoPedidoDTO";
+import { Pedido } from "../../entities/Pedido";
+import { ProdutosDoPedido } from "../../entities/ProdutosDoPedido";
+import { EnumStatusPedido } from "../../enums/EnumStatusPedido";
+import { TipoPagamento } from "../../enums/TipoPagamento";
+import { IPedidoGateway, IPedidoUseCase, IProdutoDoPedidoGateway } from "../../interfaces";
+import { IPagamentoGateway } from "../../interfaces/gateway/IPagamentoGateway";
+import { IProdutoGateway } from "../../interfaces/gateway/IProdutoGateway";
 
 class PedidoUseCase implements IPedidoUseCase {
     private produtosDoPedidoGateway: IProdutoDoPedidoGateway;

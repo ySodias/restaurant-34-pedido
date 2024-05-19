@@ -1,25 +1,25 @@
-import { ProdutosDoPedidoDTO } from "@/dtos/ProdutosDoPedidoDTO";
-import { Pedido } from "@/entities/Pedido";
-import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
-import { getDescricaoStatusPedido } from "@/enums/EnumStatusPedido";
-import PagamentoRestApi from "@/external/http/PagamentoRestApi";
-import ProdutoRestApi from "@/external/http/ProdutoRestApi";
-import PedidoRepository from "@/external/repositories/PedidoRepository";
-import ProdutosDoPedidoRepository from "@/external/repositories/ProdutosDoPedidoRepository";
-import { PagamentoGateway } from "@/gateways/PagamentoGateway";
-import { ProdutoGateway } from "@/gateways/ProdutoGateway";
-import { PedidoGateway } from "@/gateways/pedido";
-import { ProdutoDoPedidoGateway } from "@/gateways/produtosDoPedido";
+import { ProdutosDoPedidoDTO } from "../dtos/ProdutosDoPedidoDTO";
+import { Pedido } from "../entities/Pedido";
+import { ProdutosDoPedido } from "../entities/ProdutosDoPedido";
+import { getDescricaoStatusPedido } from "../enums/EnumStatusPedido";
+import PagamentoRestApi from "../external/http/PagamentoRestApi";
+import ProdutoRestApi from "../external/http/ProdutoRestApi";
+import PedidoRepository from "../external/repositories/PedidoRepository";
+import ProdutosDoPedidoRepository from "../external/repositories/ProdutosDoPedidoRepository";
+import { PagamentoGateway } from "../gateways/PagamentoGateway";
+import { ProdutoGateway } from "../gateways/ProdutoGateway";
+import { PedidoGateway } from "../gateways/pedido";
+import { ProdutoDoPedidoGateway } from "../gateways/produtosDoPedido";
 import {
     IPedidoController,
     IPedidoGateway,
     IPedidoUseCase,
     IProdutoDoPedidoGateway,
-} from "@/interfaces";
-import { IPagamentoGateway } from "@/interfaces/gateway/IPagamentoGateway";
-import { IProdutoGateway } from "@/interfaces/gateway/IProdutoGateway";
-import { BasePresenter } from "@/presenters/BasePresenter";
-import PedidoUseCase from "@/usecases/pedido/PedidoUseCase";
+} from "../interfaces";
+import { IPagamentoGateway } from "../interfaces/gateway/IPagamentoGateway";
+import { IProdutoGateway } from "../interfaces/gateway/IProdutoGateway";
+import { BasePresenter } from "../presenters/BasePresenter";
+import PedidoUseCase from "../usecases/pedido/PedidoUseCase";
 import { Request, Response } from "express";
 
 class PedidoController implements IPedidoController {
