@@ -1,4 +1,5 @@
 Feature: Pedido
+
   Scenario: Criação de pedido bem sucedido
     Given Eu tenho um pedido de criação válido
     When Eu submeto os dados para criar o pedido

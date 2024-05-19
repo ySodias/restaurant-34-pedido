@@ -1,11 +1,11 @@
-import PedidoController from "@/controllers/PedidoController";
-import PagamentoRestApi from "@/external/http/PagamentoRestApi";
-import PedidoRepository from "@/external/repositories/PedidoRepository";
-import ProdutosDoPedidoRepository from "@/external/repositories/ProdutosDoPedidoRepository";
+import PedidoController from "../controllers/PedidoController";
+import PagamentoRestApi from "../external/http/PagamentoRestApi";
+import PedidoRepository from "../external/repositories/PedidoRepository";
+import ProdutosDoPedidoRepository from "../external/repositories/ProdutosDoPedidoRepository";
 import { PrismaClient } from "@prisma/client";
 import { Application } from "express";
 import PedidoRoutes from "./pedido";
-import ProdutoRestApi from "@/external/http/ProdutoRestApi";
+import ProdutoRestApi from "../external/http/ProdutoRestApi";
 
 const BASE_URL = "/api";
 

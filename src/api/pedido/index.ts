@@ -1,4 +1,4 @@
-import { IBuildRoutes, IPedidoController } from "@/interfaces";
+import { IBuildRoutes, IPedidoController } from "../../interfaces";
 // import { CognitoVerifier } from "../auth/AuthMiddleware";
 
 class PedidoRoutes implements IBuildRoutes {

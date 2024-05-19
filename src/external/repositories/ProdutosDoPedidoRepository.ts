@@ -1,8 +1,8 @@
 
 
-import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
-import { IProdutosDoPedidoRepository } from "@/interfaces";
-import { IListaProdutosDoPedido } from "@/interfaces/entities/IListaProdutosDoPedido";
+import { ProdutosDoPedido } from "../../entities/ProdutosDoPedido";
+import { IProdutosDoPedidoRepository } from "../../interfaces";
+import { IListaProdutosDoPedido } from "../../interfaces/entities/IListaProdutosDoPedido";
 
 import { PrismaClient } from "@prisma/client";
 

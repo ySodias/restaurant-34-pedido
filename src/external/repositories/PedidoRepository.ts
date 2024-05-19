@@ -1,7 +1,7 @@
 
-import { Pedido } from "@/entities/Pedido";
-import { getDescricaoStatusPedido } from "@/enums/EnumStatusPedido";
-import { IPedidoRepository } from "@/interfaces";
+import { Pedido } from "../../entities/Pedido";
+import { getDescricaoStatusPedido } from "../../enums/EnumStatusPedido";
+import { IPedidoRepository } from "../../interfaces";
 import { PrismaClient } from "@prisma/client";
 
 class PedidoRepository implements IPedidoRepository {
