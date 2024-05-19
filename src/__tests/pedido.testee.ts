@@ -1,4 +1,5 @@
 import PedidoController from '@/controllers/PedidoController'; // Importe o controlador
+import ProdutoRestApi from '@/external/http/ProdutoRestApi';
 import { Request, Response } from 'express';
 
 // Mock das dependências
@@ -39,7 +40,9 @@ describe('PedidoController', () => {
     beforeEach(() => {
         const pedidoRepository = new (require('@/external/repositories/PedidoRepository').default)();
         const produtosDoPedidoRepository = new (require('@/external/repositories/ProdutosDoPedidoRepository').default)();
-        pedidoController = new PedidoController(pedidoRepository, produtosDoPedidoRepository);
+        const pagamentoResApi = new (require('@/external/http/PagamentoRestApi').default)();
+        const produtoRestApi = new (require('@/external/http/ProdutoRestApi').default)();
+        pedidoController = new PedidoController(pedidoRepository, produtosDoPedidoRepository, pagamentoResApi, produtoRestApi);
     });
 
     describe('createPedido', () => {

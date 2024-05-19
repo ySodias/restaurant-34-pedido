@@ -5,6 +5,7 @@ import ProdutosDoPedidoRepository from "@/external/repositories/ProdutosDoPedido
 import { PrismaClient } from "@prisma/client";
 import { Application } from "express";
 import PedidoRoutes from "./pedido";
+import ProdutoRestApi from "@/external/http/ProdutoRestApi";
 
 const BASE_URL = "/api";
 
@@ -24,11 +25,13 @@ export class routes {
             this.prisma
         );
         const pagamentoRestAPI = new PagamentoRestApi();
+        const produtoRestAPI = new ProdutoRestApi();
         
         const pedidoController = new PedidoController(
             pedidoRepository,
             produtosDoPedidoRepository,
-            pagamentoRestAPI
+            pagamentoRestAPI,
+            produtoRestAPI
         );
         const pedidoRoutes = new PedidoRoutes(
             this.app,

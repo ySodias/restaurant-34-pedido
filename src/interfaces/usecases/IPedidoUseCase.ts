@@ -1,5 +1,5 @@
+import { ProdutosDoPedidoDTO } from "@/dtos/ProdutosDoPedidoDTO";
 import { Pedido } from "@/entities/Pedido";
-import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
 
 export interface IPedidoUseCase{
   executeCreation(pedidoData: Pedido): Promise<Pedido>;
@@ -7,7 +7,7 @@ export interface IPedidoUseCase{
   executeGetPedidos(): Promise<Pedido[]>;
   executeGetPedidosByStatus(idStatusPedido: number): Promise<Pedido[]>;
   executeGetPedidoFakeCheckout(status: string): Promise<Pedido[]>;
-  executeAddProdutosAoPedido(produtosDoPedido: ProdutosDoPedido[]): Promise<any>;
+  executeAddProdutosAoPedido(produtosDoPedidoDTO: ProdutosDoPedidoDTO[]): Promise<any>;
   
   executeDelete(idPedido: number): any;
   executeRemoveProdutoDoPedido(idPedido: number, idProdutos: number): any;
@@ -15,4 +15,5 @@ export interface IPedidoUseCase{
   executeUpdatePedidoPronto(idPedido: number): any;
   executeUpdatePedidoFinalizado(idPedido: number): any;
   executeGetProdutoDoPedido(idPedido: number): any;
+  calculaValorDoPedido(idPedido: number): any;
 }

@@ -1,34 +1,38 @@
-import { IPedidoGateway, IPedidoUseCase, IProdutoDoPedidoGateway } from "@/interfaces";
-
+import { NovoPagamentoDTO } from "@/dtos/NovoPagamentoDTO";
+import { ProdutosDoPedidoDTO } from "@/dtos/ProdutosDoPedidoDTO";
 import { Pedido } from "@/entities/Pedido";
 import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
 import { EnumStatusPedido } from "@/enums/EnumStatusPedido";
-import { IPagamentoGateway } from "@/interfaces/gateway/IPagamentoGateway";
-import { NovoPagamentoDTO } from "@/dtos/NovoPagamentoDTO";
 import { TipoPagamento } from "@/enums/TipoPagamento";
+import { IPedidoGateway, IPedidoUseCase, IProdutoDoPedidoGateway } from "@/interfaces";
+import { IPagamentoGateway } from "@/interfaces/gateway/IPagamentoGateway";
+import { IProdutoGateway } from "@/interfaces/gateway/IProdutoGateway";
 
 class PedidoUseCase implements IPedidoUseCase {
     private produtosDoPedidoGateway: IProdutoDoPedidoGateway;
     private pedidoGateway: IPedidoGateway;
     private pagamentoGateway: IPagamentoGateway;
+    private produtoGateway: IProdutoGateway;
 
     constructor(
         produtosDoPedidoGateway: IProdutoDoPedidoGateway,
         pedidoGateway: IPedidoGateway,
-        pagamentoGateway: IPagamentoGateway
+        pagamentoGateway: IPagamentoGateway,
+        produtoGateway: IProdutoGateway
     ) {
         this.produtosDoPedidoGateway = produtosDoPedidoGateway;
         this.pedidoGateway = pedidoGateway;
         this.pagamentoGateway = pagamentoGateway;
+        this.produtoGateway = produtoGateway;
     }
     async executeDelete(idPedido: number) {
         try {
             // Obtém os itens do pedido
             const itensPedido = await this.executeGetProdutoDoPedido(idPedido);
-    
+
             // Remove os itens do pedido
             await this.produtosDoPedidoGateway.deleteProdutosDoPedido(itensPedido);
-    
+
             // Retorna uma mensagem de sucesso
             return 'Itens do pedido removidos com sucesso.';
         } catch (error) {
@@ -36,7 +40,7 @@ class PedidoUseCase implements IPedidoUseCase {
             throw new Error("Erro ao excluir itens do pedido.");
         }
     }
-   
+
 
     async executeCreation(pedidoData: Pedido): Promise<Pedido> {
         pedidoData.statusPedidoId = EnumStatusPedido.RECEBIDO.id;
@@ -62,8 +66,24 @@ class PedidoUseCase implements IPedidoUseCase {
         return this.pedidoGateway.getPedidoByStatusFakeCheckout(status);
     }
 
-    async executeAddProdutosAoPedido(produtosDoPedido: ProdutosDoPedido[]): Promise<any> {
-        return this.produtosDoPedidoGateway.createProdutosDoPedido(produtosDoPedido);
+    async executeAddProdutosAoPedido(produtosDoPedido: ProdutosDoPedidoDTO[]): Promise<any> {
+
+        const produtosComValores: ProdutosDoPedido[] = [];
+
+        await Promise.all(
+            produtosDoPedido.map(async (produto: any) => {
+                try {
+                    // Obter o valor do produto do gateway
+                    const response = await this.produtoGateway.getProdutoPorId(produto.produtoId);
+                    produto.valor = response.data.preco;
+                    produtosComValores.push(produto);
+                } catch (error) {
+                    console.error("Erro ao buscar produto:", error);
+                    throw new Error("Erro ao buscar produto");
+                }
+            }));
+
+        return this.produtosDoPedidoGateway.createProdutosDoPedido(produtosComValores);
     }
 
     async executeRemoveProdutoDoPedido(idPedido: number, idProdutos: number) {
@@ -73,12 +93,36 @@ class PedidoUseCase implements IPedidoUseCase {
 
     async executeUpdatePedidoFinalizado(idPedido: number) {
         try {
-            const response = await this.pedidoGateway.updatePedido(
-                idPedido,
-                "Finalizado"
-            );
-    
-            return response;
+            const valor = await this.calculaValorDoPedido(idPedido);
+
+            if (valor == 0) {
+                let message = "Error ao criar novo pagamento, valor total de produtos igual a zero"
+                console.error(message);
+                throw new Error(message);
+            }
+
+            const novoPagamentoDTO: NovoPagamentoDTO = {
+                idPedido: idPedido,
+                valor: valor,
+                tipoPagamento: TipoPagamento.PIX
+            }
+            let pagamentoId;
+
+            await this.pagamentoGateway.createPagamento(novoPagamentoDTO).then(async res => {
+                pagamentoId = res.data.idPagamento;
+            }).catch(error => {
+                console.error("Error ao criar novo pagamento:", error.response?.data);
+                throw new Error(error);
+            });
+
+            const pedidoParaAtualizar: any = {
+                id: idPedido,
+                pagamentoId: pagamentoId,
+                statusPedido: EnumStatusPedido.FINALIZADO
+            }
+            const pedido = await this.pedidoGateway.updatePedidoCompleto(pedidoParaAtualizar);
+
+            return pedido;
         } catch (error) {
             console.error("Erro ao atualizar pedido para finalizado:", error);
             throw new Error(`Erro ao atualizar pedido para finalizado: ${error}`);
@@ -86,29 +130,24 @@ class PedidoUseCase implements IPedidoUseCase {
     }
 
     async executeUpdatePedidoPreparacao(idPedido: number) {
-        try {
-            const response = await this.pedidoGateway.updatePedido(
-                idPedido,
-                "Em preparação"
-            );
 
-            return response;
-        } catch (error) {
-            throw error;
-        }
+        const response = await this.pedidoGateway.updatePedido(
+            idPedido,
+            "Em preparação"
+        );
+
+        return response;
+
     }
 
     async executeUpdatePedidoPronto(idPedido: number) {
-        try {
-            const response = await this.pedidoGateway.updatePedido(
-                idPedido,
-                "Pronto"
-            );
+        const response = await this.pedidoGateway.updatePedido(
+            idPedido,
+            "Pronto"
+        );
 
-            return response;
-        } catch (error) {
-            throw error;
-        }
+        return response;
+
     }
 
     async executeGetProdutoDoPedido(idPedido: number) {
@@ -129,9 +168,10 @@ class PedidoUseCase implements IPedidoUseCase {
         return [...pedidosPronto, ...pedidosEmPreparacao, ...pedidosRecebido];
     }
 
-    private async calculaValorDoPedido(pedidoId: number): Promise<number> {
+    async calculaValorDoPedido(pedidoId: number): Promise<number> {
         let total: number = 0;
         const produtosDoPedido: ProdutosDoPedido[] = await this.produtosDoPedidoGateway.getProdutosDoPedido(pedidoId);
+
 
         if (produtosDoPedido.length === 0) {
             return total;

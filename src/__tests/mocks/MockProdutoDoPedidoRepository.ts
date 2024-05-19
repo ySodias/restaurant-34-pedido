@@ -3,8 +3,18 @@ import { IProdutosDoPedidoRepository } from '@/interfaces';
 import { prisma } from '../jest.setup';
 import ProdutosDoPedidoRepository from '@/external/repositories/ProdutosDoPedidoRepository';
 import { ProdutosDoPedido } from '@/entities/ProdutosDoPedido';
+import { Pedido } from '@/entities/Pedido';
 
 const mockProdutosDoPedidoRepository: IProdutosDoPedidoRepository = new ProdutosDoPedidoRepository(prisma);
+
+const produtoDoPedido = {
+    id: 1,
+    produtoId: 1,
+    pedidoId: 1,
+    pedido: {} as Pedido,
+    quantidade: 1,
+    valor: 5 
+}
 
 jest.spyOn(mockProdutosDoPedidoRepository, "create")
     .mockImplementation(async (produtosDoPedido: ProdutosDoPedido[]) => {
@@ -23,7 +33,7 @@ jest.spyOn(mockProdutosDoPedidoRepository, "create")
 
         // Retorne os produtos do pedido criados
         return createdProdutosDoPedido;
-    });
+    }).mockResolvedValue(produtoDoPedido);
 
 
 jest.spyOn(mockProdutosDoPedidoRepository, "get")
@@ -32,8 +42,21 @@ jest.spyOn(mockProdutosDoPedidoRepository, "get")
             where: {
                 pedidoId: idPedido,
             },
+        }); 
+    }).mockResolvedValue(produtoDoPedido);
+
+jest.spyOn(mockProdutosDoPedidoRepository, "delete")
+    .mockImplementation(async (produtosDoPedido: ProdutosDoPedido[]) => {
+        const response = produtosDoPedido.map(async ({ produtoId, pedidoId }) => {
+            await prisma.produtosDoPedido.deleteMany({
+                where: {
+                    produtoId: produtoId,
+                    pedidoId: pedidoId
+                }
+            });
         });
-    });
+        return response
+}).mockResolvedValue([]);
 
 
 export default mockProdutosDoPedidoRepository;

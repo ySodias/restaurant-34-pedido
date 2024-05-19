@@ -7,5 +7,6 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
-  setupFilesAfterEnv: ['./src/__tests/jest.setup.ts']
+  setupFilesAfterEnv: ['./src/__tests/jest.setup.ts'],
+  coveragePathIgnorePatterns: ['<rootDir>/src/__tests/*', '<rootDir>/src/external/http/*']
 };

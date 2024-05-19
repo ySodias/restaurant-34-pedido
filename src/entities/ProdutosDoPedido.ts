@@ -1,11 +1,10 @@
-import {Produto} from "./Produto";
 import {Pedido} from "./Pedido";
 import { BaseEntity } from "./BaseEntity";
+import { Decimal } from "@prisma/client/runtime/library";
 
 interface ProdutosDoPedido extends BaseEntity{
     id: number;
     produtoId: number;
-    produto: Produto;
     pedidoId: number;
     pedido: Pedido;
     quantidade: number;
