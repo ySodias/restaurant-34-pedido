@@ -74,7 +74,7 @@ describe("Produto do pedido gateway", () => {
     })
 
     it("get", async () => {
-        const produtosDoPedido: any = await produtosDoPedidoGateway.getProdutosDoPedido(1);
+        const produtosDoPedido: any = await produtosDoPedidoGateway.getProdutosDoPedido(2);
 
         expect(produtosDoPedido).toBeDefined();
     })
