@@ -147,7 +147,15 @@ describe("Produto do pedido", () => {
         expect(produtoDoPedido).toBeDefined();
     })
 
-    it("get", async () => {
+    it("get none", async () => {
+
+
+        prismaMock.produtosDoPedido.findMany.mockResolvedValue([])
+        const produtoDoPedido: any = await produtosDoPedidoRepository.get(2);
+        expect(produtoDoPedido).toBeDefined();
+    })
+
+    it("get fail", async () => {
 
         const retorno = {
             id: 2,
