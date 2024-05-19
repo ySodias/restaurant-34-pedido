@@ -16,11 +16,6 @@ const produtoDoPedido = {
     valor: 5 
 }
 
-jest.spyOn(mockProdutoDoPedidoGateway, "getProdutosDoPedido")
-    .mockImplementation(async (idPedido: number) => {
-        return mockProdutosDoPedidoRepository.get(idPedido);
-    });
-
 jest.spyOn(mockProdutoDoPedidoGateway, "deleteProdutosDoPedido")
     .mockImplementation(async (produtosDoPedido: ProdutosDoPedido[]) => {
         return mockProdutosDoPedidoRepository.delete(produtosDoPedido);
