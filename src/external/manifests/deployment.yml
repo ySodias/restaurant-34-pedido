@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restaurant-34-pedido
+  labels:
+    app: restaurant-34-pedido
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: restaurant-34-pedido
+  template:
+    metadata:
+      labels:
+        app: restaurant-34-pedido
+    spec:
+      containers:
+        - name: restaurant-34-pedido
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: restaurant-34-pedido
+                  key: DATABASE_URL
+          image: 288728506391.dkr.ecr.us-east-1.amazonaws.com/restaurante-34-pedido:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3002
+

@@ -3,5 +3,7 @@ dist
 package-lock.json
 .env*
 public
+coverage
 prisma/migrations
 db-data
+teste

@@ -57,7 +57,7 @@ class ProdutosDoPedidoRepository implements IProdutosDoPedidoRepository {
                     pedidoId: idPedido
                 }
             });
-            return response;
+            return response || [];
         // } catch (error) {
         //     console.error(error);
         //     throw error;

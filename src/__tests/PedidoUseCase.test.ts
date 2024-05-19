@@ -1,16 +1,19 @@
 import PedidoUseCase from "@/usecases/pedido/PedidoUseCase"
 import mockPedidoGateway from "./mocks/MockPedidoGateway";
 import mockProdutoDoPedidoGateway from "./mocks/MockProdutoDoPedidoGateway";
+import mockPagamentoGateway from "./mocks/MockPagamentoGateway";
 import { Pedido } from "@/entities/Pedido";
 import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
 import StatusPedido from "@/entities/StatusPedido";
-import { Produto } from "@/entities/Produto";
+import mockProdutoGateway from "./mocks/MockProdutoGateway";
+import { EnumStatusPedido } from "@/enums/EnumStatusPedido";
+
 
 describe("Pedido Use Case", () => {
     let pedidoUseCase: PedidoUseCase;
 
     beforeAll(async () => {
-        pedidoUseCase = new PedidoUseCase(mockProdutoDoPedidoGateway, mockPedidoGateway);
+        pedidoUseCase = new PedidoUseCase(mockProdutoDoPedidoGateway, mockPedidoGateway, mockPagamentoGateway, mockProdutoGateway);
     })
 
     afterAll(async () => {
@@ -24,7 +27,6 @@ describe("Pedido Use Case", () => {
     })
 
     it("executa criacao", async () => {
-
         const pedidos = criarPedidoFake();
 
         const pedido: any = await pedidoUseCase.executeCreation(pedidos);
@@ -33,7 +35,6 @@ describe("Pedido Use Case", () => {
     })
 
     it("executa get pedidos", async () => {
-
         const pedido: any = await pedidoUseCase.executeGetPedidos();
 
         expect(pedido).toBeDefined();
@@ -58,11 +59,12 @@ describe("Pedido Use Case", () => {
         const produtos =   {
             id: 1,
             produtoId: 1,
-            produto: { id: 1, nome: "Produto 1", preco: 10 } as unknown as Produto,
             pedidoId: 1,
             pedido: {} as Pedido,
             quantidade: 2,
             valor: 20,
+            createdAt: new Date,
+            updatedAt: new Date
         } as ProdutosDoPedido
 
         const pedido: any = await pedidoUseCase.executeAddProdutosAoPedido([produtos]);
@@ -77,7 +79,7 @@ describe("Pedido Use Case", () => {
         const response = await pedidoUseCase.executeRemoveProdutoDoPedido(idPedido, idProduto);
       
         // Mocka a função removeProdutoDoPedido do PedidoGateway
-        jest.mock('./mocks/MockPedidoGateway', () => {
+        jest.mock('./mocks/MockProdutoDoPedidoGateway', () => {
           return {
             removeProdutoDoPedido: jest.fn(),
           };
@@ -85,8 +87,7 @@ describe("Pedido Use Case", () => {
       
         // Verifica se a resposta foi definida
         expect(response).toBeUndefined();
-      });
-      
+      });      
 
     it("executa delete", async () => {
 
@@ -94,23 +95,24 @@ describe("Pedido Use Case", () => {
 
         expect(pedido).toBeDefined();
     })
-
-
     
     it("executa update pedido finalizado", async () => {
+
+        const mockCalculaValorDoPedido = jest.fn().mockResolvedValue(5);
+    
+        // Substitui a implementação de calculaValorDoPedido pela implementação mockada
+        jest.spyOn(pedidoUseCase, "calculaValorDoPedido").mockImplementation(mockCalculaValorDoPedido)
+        
         // Simula a execução do método para atualizar o status de um pedido para "Finalizado"
         const idPedido = 1; // ID do pedido fictício
         const response = await pedidoUseCase.executeUpdatePedidoFinalizado(idPedido);
-      
-        // Mocka a função updatePedido do PedidoGateway
-        jest.mock('./mocks/MockPedidoGateway', () => {
-          return {
-            updatePedido: jest.fn(),
-          };
-        });
-      
+        const pedidoParaAtualizar: any = {
+            id: idPedido,
+            pagamentoId: "6648a8dac6e6d476715599b9",
+            statusPedido: EnumStatusPedido.FINALIZADO
+        }
         // Verifica se o método foi chamado com o ID correto e status "Finalizado"
-        expect(mockPedidoGateway.updatePedido).toHaveBeenCalledWith(idPedido, "Finalizado");
+        expect(mockPedidoGateway.updatePedidoCompleto).toHaveBeenCalledWith(pedidoParaAtualizar);
       
         // Verifica se a resposta foi definida
         expect(response).toBeDefined();
@@ -139,20 +141,22 @@ function criarPedidoFake(): Pedido {
             {
                 id: 1,
                 produtoId: 1,
-                produto: { id: 1, nome: "Produto 1", preco: 10 } as unknown as Produto,
                 pedidoId: 1,
                 pedido: {} as Pedido,
                 quantidade: 2,
                 valor: 20,
+                createdAt: new Date,
+                updatedAt: new Date
             } as ProdutosDoPedido,
             {
                 id: 2,
                 produtoId: 2,
-                produto: { id: 2, nome: "Produto 2", preco: 15 } as unknown as Produto,
                 pedidoId: 1,
                 pedido: {} as Pedido,
                 quantidade: 1,
                 valor: 15,
+                createdAt: new Date,
+                updatedAt: new Date
             } as ProdutosDoPedido,
         ],
         createdAt: new Date,

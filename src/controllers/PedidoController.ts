@@ -1,10 +1,13 @@
+import { ProdutosDoPedidoDTO } from "@/dtos/ProdutosDoPedidoDTO";
 import { Pedido } from "@/entities/Pedido";
 import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
 import { getDescricaoStatusPedido } from "@/enums/EnumStatusPedido";
 import PagamentoRestApi from "@/external/http/PagamentoRestApi";
+import ProdutoRestApi from "@/external/http/ProdutoRestApi";
 import PedidoRepository from "@/external/repositories/PedidoRepository";
 import ProdutosDoPedidoRepository from "@/external/repositories/ProdutosDoPedidoRepository";
 import { PagamentoGateway } from "@/gateways/PagamentoGateway";
+import { ProdutoGateway } from "@/gateways/ProdutoGateway";
 import { PedidoGateway } from "@/gateways/pedido";
 import { ProdutoDoPedidoGateway } from "@/gateways/produtosDoPedido";
 import {
@@ -14,6 +17,7 @@ import {
     IProdutoDoPedidoGateway,
 } from "@/interfaces";
 import { IPagamentoGateway } from "@/interfaces/gateway/IPagamentoGateway";
+import { IProdutoGateway } from "@/interfaces/gateway/IProdutoGateway";
 import { BasePresenter } from "@/presenters/BasePresenter";
 import PedidoUseCase from "@/usecases/pedido/PedidoUseCase";
 import { Request, Response } from "express";
@@ -23,17 +27,20 @@ class PedidoController implements IPedidoController {
     private pedidoGateway: IPedidoGateway;
     private produtosDoPedidoGateway: IProdutoDoPedidoGateway;
     private pagamentoGateway: IPagamentoGateway;
+    private produtoGateway: IProdutoGateway;
     private basePresenter = new BasePresenter();
 
     constructor(
         pedidoRepository: PedidoRepository,
         produtosDoPedidoRepository: ProdutosDoPedidoRepository,
-        pagamentoRestAPI: PagamentoRestApi
+        pagamentoRestAPI: PagamentoRestApi,
+        produtoRestAPI: ProdutoRestApi
     ) {
         this.pedidoGateway = new PedidoGateway(pedidoRepository);
         this.produtosDoPedidoGateway = new ProdutoDoPedidoGateway(produtosDoPedidoRepository);
         this.pagamentoGateway = new PagamentoGateway(pagamentoRestAPI);
-        this.pedidoUseCase = new PedidoUseCase(this.produtosDoPedidoGateway, this.pedidoGateway, this.pagamentoGateway);
+        this.produtoGateway = new ProdutoGateway(produtoRestAPI);
+        this.pedidoUseCase = new PedidoUseCase(this.produtosDoPedidoGateway, this.pedidoGateway, this.pagamentoGateway, this.produtoGateway);
     }
 
     async createPedido(req: Request, res: Response) {
@@ -177,7 +184,7 @@ class PedidoController implements IPedidoController {
                 return res.status(400).json(response);
             }
 
-            const produtosDoPedido: ProdutosDoPedido[] = listaProdutos.map((produtoDoPedido: any) => ({
+            const produtosDoPedido: ProdutosDoPedidoDTO[] = listaProdutos.map((produtoDoPedido: any) => ({
                 pedidoId: parseInt(idPedido),
                 ...produtoDoPedido
             }));
