@@ -10,6 +10,7 @@ const pedidoCriado: any = {
     id: 1,
     statusPedido: EnumStatusPedido.RECEBIDO,
     statusPedidoId: 1,
+    clienteId: 1,
     ProdutosDoPedido: {} as ProdutosDoPedido
 }
 

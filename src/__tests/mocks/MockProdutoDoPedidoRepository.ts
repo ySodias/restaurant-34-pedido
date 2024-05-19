@@ -45,5 +45,18 @@ jest.spyOn(mockProdutosDoPedidoRepository, "get")
         }); 
     }).mockResolvedValue(produtoDoPedido);
 
+jest.spyOn(mockProdutosDoPedidoRepository, "delete")
+    .mockImplementation(async (produtosDoPedido: ProdutosDoPedido[]) => {
+        const response = produtosDoPedido.map(async ({ produtoId, pedidoId }) => {
+            await prisma.produtosDoPedido.deleteMany({
+                where: {
+                    produtoId: produtoId,
+                    pedidoId: pedidoId
+                }
+            });
+        });
+        return response
+}).mockResolvedValue([]);
+
 
 export default mockProdutosDoPedidoRepository;
