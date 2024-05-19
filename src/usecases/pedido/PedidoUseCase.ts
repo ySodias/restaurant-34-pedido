@@ -173,7 +173,7 @@ class PedidoUseCase implements IPedidoUseCase {
         return [...pedidosPronto, ...pedidosEmPreparacao, ...pedidosRecebido];
     }
 
-    private async calculaValorDoPedido(pedidoId: number): Promise<number> {
+    async calculaValorDoPedido(pedidoId: number): Promise<number> {
         let total: number = 0;
         const produtosDoPedido: ProdutosDoPedido[] = await this.produtosDoPedidoGateway.getProdutosDoPedido(pedidoId);
 

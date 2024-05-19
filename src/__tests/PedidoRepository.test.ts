@@ -2,7 +2,6 @@ import { IPedidoRepository } from "@/interfaces/repositories/IPedidoRepository";
 import mockPedidoRepository from "./mocks/MockPedidoRepository";
 import { Pedido } from "@/entities/Pedido";
 import StatusPedido from "@/entities/StatusPedido";
-import { Produto } from "@/entities/Produto";
 import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
 import { EnumStatusPedido } from "@/enums/EnumStatusPedido";
 
@@ -60,27 +59,29 @@ function criarPedidoFake(): Pedido {
     const pedido: Pedido = {
         id: 1,
         clienteId: 1,
-        pagamentoId: "1",
+        pagamentoId: 1,
         statusPedidoId: 1,
         statusPedido: { id: 1, enumerador: "Em Preparação" } as StatusPedido,
         ProdutosDoPedido: [
             {
                 id: 1,
                 produtoId: 1,
-                produto: { id: 1, nome: "Produto 1", preco: 10 } as unknown as Produto,
                 pedidoId: 1,
                 pedido: {} as Pedido,
                 quantidade: 2,
                 valor: 20,
+                createdAt: new Date,
+                updatedAt: new Date
             } as ProdutosDoPedido,
             {
                 id: 2,
                 produtoId: 2,
-                produto: { id: 2, nome: "Produto 2", preco: 15 } as unknown as Produto,
                 pedidoId: 1,
                 pedido: {} as Pedido,
                 quantidade: 1,
                 valor: 15,
+                createdAt: new Date,
+                updatedAt: new Date
             } as ProdutosDoPedido,
         ],
         createdAt: new Date,

@@ -6,10 +6,10 @@ import { Pedido } from '@/entities/Pedido';
 const mockPedidoRepository: IPedidoRepository = new PedidoRepository(prisma);
 
 jest.spyOn(mockPedidoRepository, "create")
-    .mockImplementation(async (pedido: Pedido) => {
+    .mockImplementation(async (pedido: Pedido): Promise<Pedido> => {
         return await prisma.pedido.create({
             data: {
-                statusPedidoId: pedido.statusPedidoId,
+                statusPedidoId: pedido?.statusPedidoId,
                 clienteId: pedido.clienteId,
             },
         }) as Pedido;

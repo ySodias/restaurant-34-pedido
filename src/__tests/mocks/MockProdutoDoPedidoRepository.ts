@@ -32,7 +32,7 @@ jest.spyOn(mockProdutosDoPedidoRepository, "get")
             where: {
                 pedidoId: idPedido,
             },
-        });
+        }); 
     });
 
 

@@ -15,4 +15,5 @@ export interface IPedidoUseCase{
   executeUpdatePedidoPronto(idPedido: number): any;
   executeUpdatePedidoFinalizado(idPedido: number): any;
   executeGetProdutoDoPedido(idPedido: number): any;
+  calculaValorDoPedido(idPedido: number): any;
 }

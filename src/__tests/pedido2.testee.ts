@@ -70,6 +70,14 @@ const pedidoRepositoryMock: any = {
   updatePedido: jest.fn()
 };
 
+const pagamentoRestAPIMock: any = {
+  createPagamento: jest.fn()
+}
+
+const produtoRestAPIMock: any = {
+  getProdutoPorId: jest.fn()
+}
+
 const pedidoUseCaseMock = {
   executeUpdatePedidoPreparacao: jest.fn().mockImplementation(async (idPedido: number) => {
     if (idPedido !== 1) {
@@ -86,8 +94,10 @@ const produtosDoPedidoRepositoryMock: any = {
 };
 
 const pedidoController = new PedidoController(
+  pagamentoRestAPIMock,
   pedidoRepositoryMock,
-  produtosDoPedidoRepositoryMock
+  produtosDoPedidoRepositoryMock,
+  produtoRestAPIMock
 );
 
 // Mock do request e response

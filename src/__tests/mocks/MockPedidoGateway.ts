@@ -2,6 +2,7 @@ import { PedidoGateway } from "@/gateways/pedido";
 import { IPedidoGateway } from "@/interfaces";
 import mockPedidoRepository from "./MockPedidoRepository";
 import { Pedido } from "@/entities/Pedido";
+import { EnumStatusPedido } from "@/enums/EnumStatusPedido";
 
 const mockPedidoGateway: IPedidoGateway = new PedidoGateway(mockPedidoRepository);
 
@@ -35,6 +36,18 @@ jest.spyOn(mockPedidoGateway, "updatePedido")
     .mockImplementation(async (idPedido: number, statusPedido: string) => {
         return mockPedidoRepository.updatePedido(idPedido, statusPedido);
     });
+
+const pedidoParaAtualizar: any = {
+    id: 1,
+    pagamentoId: "6648a8dac6e6d476715599b9",
+    statusPedido: EnumStatusPedido.FINALIZADO
+}
+
+jest.spyOn(mockPedidoGateway, "updatePedidoCompleto")
+    .mockImplementation(async (pedido: Pedido) => {
+        return mockPedidoRepository.updatePedidoCompleto(pedido);
+}).mockResolvedValue(pedidoParaAtualizar);
+
 
 
 export default mockPedidoGateway;

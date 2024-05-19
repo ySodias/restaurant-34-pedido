@@ -1,13 +1,7 @@
 import { Pedido } from "@/entities/Pedido";
-import { Produto } from "@/entities/Produto";
 import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
-import StatusPedido from "@/entities/StatusPedido";
-import { PedidoGateway } from "@/gateways/pedido";
 import { ProdutoDoPedidoGateway } from "@/gateways/produtosDoPedido";
-import { IPedidoGateway, IProdutoDoPedidoGateway } from "@/interfaces";
-import exp from "constants";
-import mockPedidoRepository from "./mocks/MockPedidoRepository";
-import mockProdutoDoPedidoGateway from "./mocks/MockProdutoDoPedidoGateway";
+import { IProdutoDoPedidoGateway } from "@/interfaces";
 import mockProdutosDoPedidoRepository from "./mocks/MockProdutoDoPedidoRepository";
 
 
@@ -25,11 +19,12 @@ describe("Produto Do Pedido", () => {
             {
                 id: 1,
                 produtoId: 1,
-                produto: { id: 1, nome: "Produto 1", preco: 10 } as unknown as Produto,
                 pedidoId: 1,
                 pedido: {} as Pedido,
                 quantidade: 2,
                 valor: 20,
+                createdAt: new Date,
+                updatedAt: new Date
             } as ProdutosDoPedido
 
         const produtoDoPedidoCriado: any = await produtoDoPedidoGateway.createProdutosDoPedido([produto2]);
@@ -44,11 +39,12 @@ describe("Produto Do Pedido", () => {
             {
                 id: 1,
                 produtoId: 1,
-                produto: { id: 1, nome: "Produto 1", preco: 10 } as unknown as Produto,
                 pedidoId: 1,
                 pedido: {} as Pedido,
                 quantidade: 2,
                 valor: 20,
+                createdAt: new Date,
+                updatedAt: new Date
             } as ProdutosDoPedido
 
         const produtoDoPedidoDeletado: any = await produtoDoPedidoGateway.deleteProdutosDoPedido([produto2]);
