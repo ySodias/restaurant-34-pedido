@@ -27,7 +27,6 @@ describe("Pedido Use Case", () => {
     })
 
     it("executa criacao", async () => {
-
         const pedidos = criarPedidoFake();
 
         const pedido: any = await pedidoUseCase.executeCreation(pedidos);
@@ -36,7 +35,6 @@ describe("Pedido Use Case", () => {
     })
 
     it("executa get pedidos", async () => {
-
         const pedido: any = await pedidoUseCase.executeGetPedidos();
 
         expect(pedido).toBeDefined();
@@ -81,7 +79,7 @@ describe("Pedido Use Case", () => {
         const response = await pedidoUseCase.executeRemoveProdutoDoPedido(idPedido, idProduto);
       
         // Mocka a função removeProdutoDoPedido do PedidoGateway
-        jest.mock('./mocks/MockPedidoGateway', () => {
+        jest.mock('./mocks/MockProdutoDoPedidoGateway', () => {
           return {
             removeProdutoDoPedido: jest.fn(),
           };

@@ -6,7 +6,11 @@ const mockProdutoRestApi: IProdutoRestAPI = new ProdutoRestApi();
 
 jest.spyOn(mockProdutoRestApi, "getProdutoPorId")
     .mockImplementation(async (produtoId: number) => {
-        return {}
+        return {
+            data: {
+                preco: 1
+            }
+        }
     });
 
 export default mockProdutoRestApi;

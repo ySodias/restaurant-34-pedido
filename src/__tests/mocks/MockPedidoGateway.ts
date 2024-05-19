@@ -6,30 +6,41 @@ import { EnumStatusPedido } from "@/enums/EnumStatusPedido";
 
 const mockPedidoGateway: IPedidoGateway = new PedidoGateway(mockPedidoRepository);
 
+const pedidoParaAtualizar: any = {
+    id: 1,
+    pagamentoId: "6648a8dac6e6d476715599b9",
+    statusPedido: EnumStatusPedido.FINALIZADO
+}
+
+const pedidoCriado: any = {
+    id: 1,
+    statusPedido: EnumStatusPedido.RECEBIDO
+}
+
 jest.spyOn(mockPedidoGateway, "getPedidoById")
     .mockImplementation(async (idPedido: number) => {
         return mockPedidoRepository.getPedidoById(idPedido);
-    });
+    }).mockResolvedValue(pedidoParaAtualizar);
 
 jest.spyOn(mockPedidoGateway, "createPedido")
     .mockImplementation(async (pedido: Pedido) => {
         return mockPedidoRepository.create(pedido);
-    });
+    }).mockResolvedValue(pedidoCriado);
 
 jest.spyOn(mockPedidoGateway, "getPedidos")
     .mockImplementation(async () => {
         return mockPedidoRepository.getPedidos();
-    });
+    }).mockResolvedValue([pedidoCriado, pedidoParaAtualizar]);
 
 jest.spyOn(mockPedidoGateway, "getPedidosByStatus")
     .mockImplementation(async (status: number) => {
         return mockPedidoRepository.getPedidosByStatus(status);
-    });
+    }).mockResolvedValue([pedidoCriado, pedidoParaAtualizar]);
 
 jest.spyOn(mockPedidoGateway, "getPedidoByStatusFakeCheckout")
     .mockImplementation(async (status: string) => {
         return mockPedidoRepository.getPedidoByStatusFakeCheckout(status);
-    });
+    }).mockResolvedValue([pedidoCriado, pedidoParaAtualizar]);
 
 
 jest.spyOn(mockPedidoGateway, "updatePedido")
@@ -37,16 +48,12 @@ jest.spyOn(mockPedidoGateway, "updatePedido")
         return mockPedidoRepository.updatePedido(idPedido, statusPedido);
     });
 
-const pedidoParaAtualizar: any = {
-    id: 1,
-    pagamentoId: "6648a8dac6e6d476715599b9",
-    statusPedido: EnumStatusPedido.FINALIZADO
-}
 
 jest.spyOn(mockPedidoGateway, "updatePedidoCompleto")
     .mockImplementation(async (pedido: Pedido) => {
         return mockPedidoRepository.updatePedidoCompleto(pedido);
 }).mockResolvedValue(pedidoParaAtualizar);
+
 
 
 
