@@ -56,7 +56,7 @@ describe("Pedido Use Case", () => {
 
     it("executa add Produtos ao pedido", async () => {
 
-        const produtos =   {
+        const produtos = {
             id: 1,
             produtoId: 1,
             pedidoId: 1,
@@ -77,17 +77,17 @@ describe("Pedido Use Case", () => {
         const idPedido = 1; // ID do pedido fictício
         const idProduto = 1; // ID do produto fictício
         const response = await pedidoUseCase.executeRemoveProdutoDoPedido(idPedido, idProduto);
-      
+
         // Mocka a função removeProdutoDoPedido do PedidoGateway
         jest.mock('./mocks/MockProdutoDoPedidoGateway', () => {
-          return {
-            removeProdutoDoPedido: jest.fn(),
-          };
+            return {
+                removeProdutoDoPedido: jest.fn(),
+            };
         });
-      
+
         // Verifica se a resposta foi definida
         expect(response).toBeUndefined();
-      });      
+    });
 
     it("executa delete", async () => {
 
@@ -95,14 +95,14 @@ describe("Pedido Use Case", () => {
 
         expect(pedido).toBeDefined();
     })
-    
+
     it("executa update pedido finalizado", async () => {
 
         const mockCalculaValorDoPedido = jest.fn().mockResolvedValue(5);
-    
+
         // Substitui a implementação de calculaValorDoPedido pela implementação mockada
         jest.spyOn(pedidoUseCase, "calculaValorDoPedido").mockImplementation(mockCalculaValorDoPedido)
-        
+
         // Simula a execução do método para atualizar o status de um pedido para "Finalizado"
         const idPedido = 1; // ID do pedido fictício
         const response = await pedidoUseCase.executeUpdatePedidoFinalizado(idPedido);
@@ -113,17 +113,90 @@ describe("Pedido Use Case", () => {
         }
         // Verifica se o método foi chamado com o ID correto e status "Finalizado"
         expect(mockPedidoGateway.updatePedidoCompleto).toHaveBeenCalledWith(pedidoParaAtualizar);
-      
+
         // Verifica se a resposta foi definida
         expect(response).toBeDefined();
+    });
+
+
+    it("Deve retornar um array 0", async () => {
+        const pedidoId = 1;
+      
+        // Mock getProdutosDoPedido to return an empty array
+        jest.mock('./mocks/MockProdutoDoPedidoGateway', () => {
+          return {
+            getProdutosDoPedido: jest.fn(() => Promise.resolve([])),
+          };
+        });
+      
+        const total = await pedidoUseCase.calculaValorDoPedido(pedidoId);
+        expect(total).toBe(0);
       });
-    
-    
+      
+      it("Deve calcular somente um produto", async () => {
+        const pedidoId = 1;
+        const expectedTotal = 20; // Quantity 2 * Value 10
+      
+        // Mock getProdutosDoPedido to return a single product
+        jest.mock('./mocks/MockProdutoDoPedidoGateway', () => {
+          return {
+            getProdutosDoPedido: jest.fn((idPedido: number) => Promise.resolve([
+              {
+                id: 1,
+                produtoId: 1,
+                pedidoId: 1,
+                pedido: {} as Pedido,
+                quantidade: 2,
+                valor: 10,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
+            ])),
+          };
+        });
+      
+        const total = await pedidoUseCase.calculaValorDoPedido(pedidoId);
+        expect(total).toBe(expectedTotal);
+      });
+      
+      it("Deve calcular varios produtos", async () => {
+        const pedidoId = 1;
+        const expectedTotal = 55; // Product 1: 20 + Product 2: 35
+      
+        // Mock getProdutosDoPedido to return multiple products
+        jest.mock('./mocks/MockProdutoDoPedidoGateway', () => {
+          return {
+            getProdutosDoPedido: jest.fn(() => Promise.resolve([
+              {
+                id: 1,
+                produtoId: 1,
+                pedidoId: 1,
+                pedido: {} as Pedido,
+                quantidade: 2,
+                valor: 10,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
+              {
+                id: 2,
+                produtoId: 2,
+                pedidoId: 1,
+                pedido: {} as Pedido,
+                quantidade: 1,
+                valor: 35,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
+            ])),
+          };
+        });
+      
+        const total = await pedidoUseCase.calculaValorDoPedido(pedidoId);
+        expect(total).toBe(expectedTotal);
+      });
+
+
     // Testes para os demais métodos seguem o mesmo padrão
-    
-
-
-
 
 })
 

@@ -177,6 +177,10 @@ class PedidoUseCase implements IPedidoUseCase {
         let total: number = 0;
         const produtosDoPedido: ProdutosDoPedido[] = await this.produtosDoPedidoGateway.getProdutosDoPedido(pedidoId);
 
+        if (!Array.isArray(produtosDoPedido)) {
+            throw new Error("Expected an array of produtosDoPedido");
+        }
+
         if (produtosDoPedido.length === 0) {
             return total;
         } else if (produtosDoPedido.length === 1) {
