@@ -7,6 +7,7 @@ import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
 import StatusPedido from "@/entities/StatusPedido";
 import mockProdutoGateway from "./mocks/MockProdutoGateway";
 import { EnumStatusPedido } from "@/enums/EnumStatusPedido";
+import mockProdutosDoPedidoRepository from "./mocks/MockProdutoDoPedidoRepository";
 
 
 describe("Pedido Use Case", () => {
@@ -98,10 +99,21 @@ describe("Pedido Use Case", () => {
 
     it("executa update pedido finalizado", async () => {
 
-        const mockCalculaValorDoPedido = jest.fn().mockResolvedValue(5);
-
-        // Substitui a implementação de calculaValorDoPedido pela implementação mockada
-        jest.spyOn(pedidoUseCase, "calculaValorDoPedido").mockImplementation(mockCalculaValorDoPedido)
+      jest.spyOn(mockProdutoDoPedidoGateway, "getProdutosDoPedido")
+      .mockImplementation(async (idPedido: number) => {
+          return mockProdutosDoPedidoRepository.get(idPedido);
+      }).mockResolvedValue([
+        {
+          id: 1,
+          produtoId: 1,
+          pedidoId: 1,
+          pedido: {} as Pedido,
+          quantidade: 2,
+          valor: 10,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ]);
 
         // Simula a execução do método para atualizar o status de um pedido para "Finalizado"
         const idPedido = 1; // ID do pedido fictício
@@ -123,14 +135,14 @@ describe("Pedido Use Case", () => {
         const pedidoId = 1;
       
         // Mock getProdutosDoPedido to return an empty array
-        jest.mock('./mocks/MockProdutoDoPedidoGateway', () => {
-          return {
-            getProdutosDoPedido: jest.fn(() => Promise.resolve([])),
-          };
-        });
+        jest.spyOn(mockProdutoDoPedidoGateway, "getProdutosDoPedido")
+          .mockImplementation(async (idPedido: number) => {
+              return mockProdutosDoPedidoRepository.get(idPedido);
+        }).mockResolvedValue([]);
       
         const total = await pedidoUseCase.calculaValorDoPedido(pedidoId);
         expect(total).toBe(0);
+        
       });
       
       it("Deve calcular somente um produto", async () => {
@@ -138,22 +150,21 @@ describe("Pedido Use Case", () => {
         const expectedTotal = 20; // Quantity 2 * Value 10
       
         // Mock getProdutosDoPedido to return a single product
-        jest.mock('./mocks/MockProdutoDoPedidoGateway', () => {
-          return {
-            getProdutosDoPedido: jest.fn((idPedido: number) => Promise.resolve([
-              {
-                id: 1,
-                produtoId: 1,
-                pedidoId: 1,
-                pedido: {} as Pedido,
-                quantidade: 2,
-                valor: 10,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-            ])),
-          };
-        });
+        jest.spyOn(mockProdutoDoPedidoGateway, "getProdutosDoPedido")
+          .mockImplementation(async (idPedido: number) => {
+              return mockProdutosDoPedidoRepository.get(idPedido);
+        }).mockResolvedValue([
+          {
+            id: 1,
+            produtoId: 1,
+            pedidoId: 1,
+            pedido: {} as Pedido,
+            quantidade: 2,
+            valor: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ]);
       
         const total = await pedidoUseCase.calculaValorDoPedido(pedidoId);
         expect(total).toBe(expectedTotal);
@@ -163,33 +174,31 @@ describe("Pedido Use Case", () => {
         const pedidoId = 1;
         const expectedTotal = 55; // Product 1: 20 + Product 2: 35
       
-        // Mock getProdutosDoPedido to return multiple products
-        jest.mock('./mocks/MockProdutoDoPedidoGateway', () => {
-          return {
-            getProdutosDoPedido: jest.fn(() => Promise.resolve([
-              {
-                id: 1,
-                produtoId: 1,
-                pedidoId: 1,
-                pedido: {} as Pedido,
-                quantidade: 2,
-                valor: 10,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-              {
-                id: 2,
-                produtoId: 2,
-                pedidoId: 1,
-                pedido: {} as Pedido,
-                quantidade: 1,
-                valor: 35,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-            ])),
-          };
-        });
+        jest.spyOn(mockProdutoDoPedidoGateway, "getProdutosDoPedido")
+          .mockImplementation(async (idPedido: number) => {
+              return mockProdutosDoPedidoRepository.get(idPedido);
+        }).mockResolvedValue([
+          {
+            id: 1,
+            produtoId: 1,
+            pedidoId: 1,
+            pedido: {} as Pedido,
+            quantidade: 2,
+            valor: 10,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          {
+            id: 2,
+            produtoId: 2,
+            pedidoId: 1,
+            pedido: {} as Pedido,
+            quantidade: 1,
+            valor: 35,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ]);
       
         const total = await pedidoUseCase.calculaValorDoPedido(pedidoId);
         expect(total).toBe(expectedTotal);
