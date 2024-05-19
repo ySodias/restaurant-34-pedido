@@ -130,29 +130,24 @@ class PedidoUseCase implements IPedidoUseCase {
     }
 
     async executeUpdatePedidoPreparacao(idPedido: number) {
-        try {
-            const response = await this.pedidoGateway.updatePedido(
-                idPedido,
-                "Em preparação"
-            );
 
-            return response;
-        } catch (error) {
-            throw error;
-        }
+        const response = await this.pedidoGateway.updatePedido(
+            idPedido,
+            "Em preparação"
+        );
+
+        return response;
+
     }
 
     async executeUpdatePedidoPronto(idPedido: number) {
-        try {
-            const response = await this.pedidoGateway.updatePedido(
-                idPedido,
-                "Pronto"
-            );
+        const response = await this.pedidoGateway.updatePedido(
+            idPedido,
+            "Pronto"
+        );
 
-            return response;
-        } catch (error) {
-            throw error;
-        }
+        return response;
+
     }
 
     async executeGetProdutoDoPedido(idPedido: number) {
@@ -177,9 +172,6 @@ class PedidoUseCase implements IPedidoUseCase {
         let total: number = 0;
         const produtosDoPedido: ProdutosDoPedido[] = await this.produtosDoPedidoGateway.getProdutosDoPedido(pedidoId);
 
-        if (!Array.isArray(produtosDoPedido)) {
-            throw new Error("Expected an array of produtosDoPedido");
-        }
 
         if (produtosDoPedido.length === 0) {
             return total;
