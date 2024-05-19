@@ -34,7 +34,7 @@ model ProdutosDoPedido{
   pedidoId Int
   pedido Pedido @relation(fields: [pedidoId], references: [id])
   quantidade Int
-  valor Decimal
+  valor Int
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }

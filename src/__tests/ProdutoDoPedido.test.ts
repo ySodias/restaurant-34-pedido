@@ -58,8 +58,13 @@ describe("Produto Do Pedido", () => {
 
         expect(getProdutosDoPedido).toBeDefined();
     });
+    
 
 
+    it("removeProdutoDoPedido", async () => {
+
+        const removeProdutoDoPedido: any = await produtoDoPedidoGateway.removeProdutoDoPedido(1, 1);
+
+        expect(removeProdutoDoPedido).toBeUndefined();
+    });
 })
-
-

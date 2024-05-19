@@ -1,5 +1,6 @@
 import {Pedido} from "./Pedido";
 import { BaseEntity } from "./BaseEntity";
+import { Decimal } from "@prisma/client/runtime/library";
 
 interface ProdutosDoPedido extends BaseEntity{
     id: number;
