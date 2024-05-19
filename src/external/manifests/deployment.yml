@@ -25,5 +25,5 @@ spec:
           image: 035133178716.dkr.ecr.us-east-1.amazonaws.com/restaurante-34-pedido:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 3002
+            - containerPort: 3001
 

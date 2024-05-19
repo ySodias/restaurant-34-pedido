@@ -18,7 +18,7 @@ export class ProdutoDoPedidoGateway implements IProdutoDoPedidoGateway {
             throw new Error("Erro ao remover produto(s) no pedido.");
         }
     }
-    removeProdutoDoPedido(idPedido: number, idProdutos: number) {
+    removeProdutoDoPedido(idPedido: number, idProdutos: number): void {
         const produto: any = this.getProdutosDoPedido(idPedido)
 
         this.produtoDoPedidoRepository.delete(produto);
