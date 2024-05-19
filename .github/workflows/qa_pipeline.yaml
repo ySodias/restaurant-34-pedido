@@ -39,5 +39,5 @@ jobs:
           args: >
             -Dsonar.javascript.typescript=true
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.exclusions=**/node_modules/**,**/__tests/**,**/public/**,src/api/**,src/server.ts,docker-compose.yaml,Dockerfile,PrismaMigration.Dockerfile,**/manifests/**,**/prisma/**,jest.config.cjs,commitlint.config.js,**/external/http/**,**/presenters/**,**/controllers/**,src/entities/BaseEntity      
+            -Dsonar.exclusions=**/node_modules/**,**/__tests/**,**/public/**,src/api/**,src/server.ts,docker-compose.yaml,Dockerfile,PrismaMigration.Dockerfile,**/manifests/**,**/prisma/**,jest.config.cjs,commitlint.config.js,**/external/http/**,**/presenters/**,**/controllers/**,src/entities/BaseEntity   
             -Dsonar.javascript.typescript.lcov.reportPaths=coverage/lcov.info
