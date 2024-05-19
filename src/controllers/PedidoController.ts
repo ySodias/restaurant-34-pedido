@@ -1,6 +1,5 @@
 import { ProdutosDoPedidoDTO } from "@/dtos/ProdutosDoPedidoDTO";
 import { Pedido } from "@/entities/Pedido";
-import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
 import { getDescricaoStatusPedido } from "@/enums/EnumStatusPedido";
 import PagamentoRestApi from "@/external/http/PagamentoRestApi";
 import ProdutoRestApi from "@/external/http/ProdutoRestApi";
