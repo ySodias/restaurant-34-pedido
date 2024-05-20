@@ -11,7 +11,7 @@ datasource db {
 model Pedido{
   id Int @id @default(autoincrement())
   clienteId Int 
-  pagamentoId Int?
+  pagamentoId String?
   statusPedidoId Int
   statusPedido StatusPedido @relation(fields: [statusPedidoId], references: [id])
   ProdutosDoPedido ProdutosDoPedido[]

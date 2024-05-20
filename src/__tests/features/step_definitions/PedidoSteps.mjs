@@ -13,7 +13,7 @@ let pedido;
 Given('Eu tenho um pedido de criação válido', function () {
     pedido = {
         clienteId: 1,
-        pagamentoId: 1,
+        pagamentoId: "1",
         statusPedidoId: 1,
         statusPedido: EnumStatusPedido.RECEBIDO,
         ProdutosDoPedido: [

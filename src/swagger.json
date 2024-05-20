@@ -38,154 +38,7 @@
                 }
             }
         },
-        "/cliente": {
-            "post": {
-                "tags": ["Cliente"],
-                "summary": "Cria um novo cliente",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Cliente"
-                        }
-                    }
-                },
-                "requestBody": {
-                    "description": "Objeto de Cliente",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/definitions/Cliente"
-                            }
-                        }
-                    },
-                    "produces": ["application/json"]
-                }
-            }
-        },
-        "/cliente/{cpf}": {
-            "parameters": [
-                {
-                    "name": "cpf",
-                    "in": "path",
-                    "required": true,
-                    "description": "CPF do cliente que deseja buscar",
-                    "type": "string"
-                }
-            ],
-            "get": {
-                "tags": ["Cliente"],
-                "summary": "Busca cliente pelo CPF",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Cliente"
-                        }
-                    }
-                },
-                "404": {
-                    "description": "Failed. Cat not found."
-                }
-            }
-        },
-        "/produto": {
-            "post": {
-                "tags": ["Produto"],
-                "summary": "Cria um novo produto",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Produto"
-                        }
-                    }
-                },
-                "requestBody": {
-                    "description": "Objeto de Produto",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/definitions/ProdutoInputPost"
-                            }
-                        }
-                    },
-                    "produces": ["application/json"]
-                }
-            },
-            "put": {
-                "tags": ["Produto"],
-                "summary": "Altera o produto",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Produto"
-                        }
-                    }
-                },
-                "requestBody": {
-                    "description": "Cliente Object",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/definitions/Produto"
-                            }
-                        }
-                    },
-                    "produces": ["application/json"]
-                }
-            }
-        },
-        "/produto/{id}": {
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "description": "ID do produto que deseja deletar",
-                    "type": "string"
-                }
-            ],
-            "delete": {
-                "tags": ["Produto"],
-                "summary": "Deleta um produto",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Produto"
-                        }
-                    }
-                }
-            }
-        },
-        "/produtos/categoria/{id}": {
-            "parameters": [
-                {
-                    "name": "id",
-                    "in": "path",
-                    "required": true,
-                    "description": "ID da categoria que deseja buscar",
-                    "type": "string"
-                }
-            ],
-            "get": {
-                "tags": ["Produto"],
-                "summary": "Busca os produtos da categoria desejada",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Produto"
-                        }
-                    }
-                }
-            }
-        },
+        
         "/pedido": {
             "post": {
                 "tags": ["Pedido"],
@@ -371,6 +224,7 @@
                     "produces": ["application/json"]
                 }
             }
+        }
         },
         "/pagamento/{pagamentoId}": {
             "parameters": [
@@ -383,73 +237,7 @@
                 }
             ],
             "get": {
-                "tags": ["Pagamento"],
-                "summary": "Busca um pagamento pelo ID",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Pagamento"
-                        }
-                    }
-                },
-                "404": {
-                    "description": "Failed. Cat not found."
-                }
-            }
-        },
-        "/pagamento": {
-            "post": {
-                "tags": ["Pagamento"],
-                "summary": "Cria um novo pagamento para um pedido",
-                "requestBody": {
-                    "description": "ID do pedido para gerar o pagamento",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "example": {
-                                "idPedido": 1
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/PagamentoResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/webhook/pagamento": {
-            "post": {
-                "tags": ["Pagamento"],
-                "summary": "Webhook que atualiza o status de um pagamento",
-                "requestBody": {
-                    "description": "Dados do pagamento",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "example": {
-                                "pagamentoId": 1,
-                                "status": 2,
-                                "token": "token"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/PagamentoResponse"
-                        }
-                    }
-                }
-            }
-        }
+                "tags": ["Pagamento"]
     },
     "definitions": {
         "id": {
@@ -465,69 +253,6 @@
                 "message": {
                     "type": "string",
                     "default": "Application Alive!!!"
-                }
-            }
-        },
-        "Cliente": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer",
-                    "default": 1
-                },
-                "nome": {
-                    "type": "string",
-                    "default": "Milton Abdon"
-                },
-                "cpf": {
-                    "type": "string",
-                    "default": "1231231234"
-                },
-                "email": {
-                    "type": "string",
-                    "default": "milton.teste@gmail.com"
-                },
-                "usuarioId": {
-                    "type": "integer",
-                    "default": 7
-                }
-            }
-        },
-        "Produto": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer",
-                    "default": 6
-                },
-                "categoriaProdutoId": {
-                    "type": "integer",
-                    "default": 3
-                },
-                "descricao": {
-                    "type": "string",
-                    "default": "Fanta uva"
-                },
-                "preco": {
-                    "type": "string",
-                    "default": "15.00"
-                }
-            }
-        },
-        "ProdutoInputPost": {
-            "type": "object",
-            "properties": {
-                "categoriaProdutoId": {
-                    "type": "integer",
-                    "default": 3
-                },
-                "descricao": {
-                    "type": "string",
-                    "default": "Fanta uva"
-                },
-                "preco": {
-                    "type": "string",
-                    "default": "15.00"
                 }
             }
         },
@@ -634,17 +359,6 @@
                                 "default": 37.21
                             }
                         }
-                    }
-                }
-            }
-        },
-        "Clientes": {
-            "type": "object",
-            "properties": {
-                "Cliente": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/Cliente"
                     }
                 }
             }

@@ -305,7 +305,7 @@ function criarPedidoFake(): Pedido {
   const pedido: Pedido = {
     id: 1,
     clienteId: 1,
-    pagamentoId: 1,
+    pagamentoId: "1",
     statusPedidoId: 1,
     statusPedido: { id: 1, enumerador: "Em Preparação" } as StatusPedido,
     ProdutosDoPedido: [
