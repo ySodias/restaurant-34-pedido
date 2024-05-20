@@ -225,19 +225,6 @@
                 }
             }
         }
-        },
-        "/pagamento/{pagamentoId}": {
-            "parameters": [
-                {
-                    "name": "pagamentoId",
-                    "in": "path",
-                    "required": true,
-                    "description": "ID do pagamento",
-                    "type": "string"
-                }
-            ],
-            "get": {
-                "tags": ["Pagamento"]
     },
     "definitions": {
         "id": {
@@ -415,5 +402,4 @@
             }
         }
     }
-}
 }
