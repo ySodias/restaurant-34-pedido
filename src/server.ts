@@ -8,9 +8,6 @@ import { routes } from "./api";
 import { prisma } from "./external/database";
 import request from 'supertest';
 
-
-process.env.DATABASE_URL="postgresql://root:root@localhost:5432/postgres?schema=public"
-
 const app = express();
 
 app.use(bodyParser.json({ limit: "50mb" }));
