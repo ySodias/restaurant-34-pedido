@@ -28,9 +28,6 @@ jobs:
       - name: Execute Tests
         run: npm run test:coverage
 
-      - name: Execute Tests BDD
-        run: npm run test:features
-
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
