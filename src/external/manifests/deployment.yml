@@ -22,11 +22,13 @@ spec:
                 configMapKeyRef:
                   name: restaurant-34-pedido
                   key: DATABASE_URL
-            - valueFrom:
+            - name: MS_PRODUTO_URL
+              valueFrom:
                 configMapKeyRef:
                   name: restaurant-34-pedido
                   key: MS_PRODUTO_URL
-            - valueFrom:
+            - name: MS_PAGAMENTO_URL
+              valueFrom:
                 configMapKeyRef:
                   name: restaurant-34-pedido
                   key: MS_PAGAMENTO_URL
