@@ -1,36 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: restaurant-34-pedido
+  name: restaurante-34-pedido
   labels:
-    app: restaurant-34-pedido
+    app: restaurante-34-pedido
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: restaurant-34-pedido
+      app: restaurante-34-pedido
   template:
     metadata:
       labels:
-        app: restaurant-34-pedido
+        app: restaurante-34-pedido
     spec:
       containers:
-        - name: restaurant-34-pedido
+        - name: restaurante-34-pedido
           env:
             - name: DATABASE_URL
               valueFrom:
                 configMapKeyRef:
-                  name: restaurant-34-pedido
+                  name: restaurante-34-pedido
                   key: DATABASE_URL
             - name: MS_PRODUTO_URL
               valueFrom:
                 configMapKeyRef:
-                  name: restaurant-34-pedido
+                  name: restaurante-34-pedido
                   key: MS_PRODUTO_URL
             - name: MS_PAGAMENTO_URL
               valueFrom:
                 configMapKeyRef:
-                  name: restaurant-34-pedido
+                  name: restaurante-34-pedido
                   key: MS_PAGAMENTO_URL
           image: 035133178716.dkr.ecr.us-east-1.amazonaws.com/restaurante-34-pedido:latest
           imagePullPolicy: IfNotPresent
