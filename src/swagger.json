@@ -224,6 +224,7 @@
                     "produces": ["application/json"]
                 }
             }
+        }
         },
         "/pagamento/{pagamentoId}": {
             "parameters": [
@@ -236,73 +237,7 @@
                 }
             ],
             "get": {
-                "tags": ["Pagamento"],
-                "summary": "Busca um pagamento pelo ID",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/Pagamento"
-                        }
-                    }
-                },
-                "404": {
-                    "description": "Failed. Cat not found."
-                }
-            }
-        },
-        "/pagamento": {
-            "post": {
-                "tags": ["Pagamento"],
-                "summary": "Cria um novo pagamento para um pedido",
-                "requestBody": {
-                    "description": "ID do pedido para gerar o pagamento",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "example": {
-                                "idPedido": 1
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/PagamentoResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/webhook/pagamento": {
-            "post": {
-                "tags": ["Pagamento"],
-                "summary": "Webhook que atualiza o status de um pagamento",
-                "requestBody": {
-                    "description": "Dados do pagamento",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "example": {
-                                "pagamentoId": 1,
-                                "status": 2,
-                                "token": "token"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/PagamentoResponse"
-                        }
-                    }
-                }
-            }
-        }
+                "tags": ["Pagamento"]
     },
     "definitions": {
         "id": {
