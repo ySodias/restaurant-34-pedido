@@ -11,7 +11,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:features": "tsc && cucumber-js src/__tests",
-    "start": "tsc && npx prisma generate && ts-node -r tsconfig-paths/register public/src/server.js",
+    "start": "tsc && npx prisma generate && ts-node -r tsconfig-paths/register public/server.js",
     "dev": "npx tsx watch src/server.ts",
     "build": "npx prisma generate && tsc",
     "prisma-setup": "npx prisma migrate dev --name init && npx prisma db seed"
