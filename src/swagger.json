@@ -297,6 +297,7 @@
         },
         "StatusPedidoOutput": {
             "type": "object",
+            
             "properties": {
                 "update": {
                     "type": "object",
