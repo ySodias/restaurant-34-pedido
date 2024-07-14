@@ -1,3 +1,4 @@
+import { IQueueAdapter } from "@/interfaces/repositories/IQueueAdapter";
 import { NovoPagamentoDTO } from "../../dtos/NovoPagamentoDTO";
 import { ProdutosDoPedidoDTO } from "../../dtos/ProdutosDoPedidoDTO";
 import { Pedido } from "../../entities/Pedido";
@@ -13,17 +14,21 @@ class PedidoUseCase implements IPedidoUseCase {
     private pedidoGateway: IPedidoGateway;
     private pagamentoGateway: IPagamentoGateway;
     private produtoGateway: IProdutoGateway;
+    private queue: IQueueAdapter;
+    private readonly pedidoQueue: string = process.env.PEDIDO_QUEUE as string;
 
     constructor(
         produtosDoPedidoGateway: IProdutoDoPedidoGateway,
         pedidoGateway: IPedidoGateway,
         pagamentoGateway: IPagamentoGateway,
-        produtoGateway: IProdutoGateway
+        produtoGateway: IProdutoGateway,
+        queue: IQueueAdapter
     ) {
         this.produtosDoPedidoGateway = produtosDoPedidoGateway;
         this.pedidoGateway = pedidoGateway;
         this.pagamentoGateway = pagamentoGateway;
         this.produtoGateway = produtoGateway;
+        this.queue = queue
     }
     async executeDelete(idPedido: number) {
         try {
@@ -45,6 +50,7 @@ class PedidoUseCase implements IPedidoUseCase {
     async executeCreation(pedidoData: Pedido): Promise<Pedido> {
         pedidoData.statusPedidoId = EnumStatusPedido.RECEBIDO.id;
         const pedidoCriado: Pedido = await this.pedidoGateway.createPedido(pedidoData);
+        this.queue.publish(this.pedidoQueue, pedidoCriado);
         return pedidoCriado;
     }
 

@@ -6,6 +6,7 @@ import { PrismaClient } from "@prisma/client";
 import { Application } from "express";
 import PedidoRoutes from "./pedido";
 import ProdutoRestApi from "../external/http/ProdutoRestApi";
+import { RabbitMQService } from "../external/messaging/RabbitMQService";
 
 const BASE_URL = "/api";
 
@@ -21,18 +22,19 @@ export class routes {
     private setupRoutes() {
 
         const pedidoRepository = new PedidoRepository(this.prisma);
-        const produtosDoPedidoRepository = new ProdutosDoPedidoRepository(
-            this.prisma
-        );
+        const produtosDoPedidoRepository = new ProdutosDoPedidoRepository(this.prisma);
         const pagamentoRestAPI = new PagamentoRestApi();
         const produtoRestAPI = new ProdutoRestApi();
-        
+        const queueAdapter = new RabbitMQService();
+
         const pedidoController = new PedidoController(
             pedidoRepository,
             produtosDoPedidoRepository,
             pagamentoRestAPI,
-            produtoRestAPI
+            produtoRestAPI,
+            queueAdapter
         );
+
         const pedidoRoutes = new PedidoRoutes(
             this.app,
             pedidoController,

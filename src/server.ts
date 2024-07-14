@@ -1,7 +1,7 @@
 import express from "express";
 import http from "http";
 import bodyParser from "body-parser";
-import cors from "cors"; 
+import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import * as swaggerDocument from "./swagger.json";
 import { routes } from "./api";

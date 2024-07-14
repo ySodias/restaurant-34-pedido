@@ -1,3 +1,4 @@
+import { IQueueAdapter } from "@/interfaces/repositories/IQueueAdapter";
 import { ProdutosDoPedidoDTO } from "../dtos/ProdutosDoPedidoDTO";
 import { Pedido } from "../entities/Pedido";
 import { ProdutosDoPedido } from "../entities/ProdutosDoPedido";
@@ -34,13 +35,14 @@ class PedidoController implements IPedidoController {
         pedidoRepository: PedidoRepository,
         produtosDoPedidoRepository: ProdutosDoPedidoRepository,
         pagamentoRestAPI: PagamentoRestApi,
-        produtoRestAPI: ProdutoRestApi
+        produtoRestAPI: ProdutoRestApi,
+        queueAdapter: IQueueAdapter
     ) {
         this.pedidoGateway = new PedidoGateway(pedidoRepository);
         this.produtosDoPedidoGateway = new ProdutoDoPedidoGateway(produtosDoPedidoRepository);
         this.pagamentoGateway = new PagamentoGateway(pagamentoRestAPI);
         this.produtoGateway = new ProdutoGateway(produtoRestAPI);
-        this.pedidoUseCase = new PedidoUseCase(this.produtosDoPedidoGateway, this.pedidoGateway, this.pagamentoGateway, this.produtoGateway);
+        this.pedidoUseCase = new PedidoUseCase(this.produtosDoPedidoGateway, this.pedidoGateway, this.pagamentoGateway, this.produtoGateway, queueAdapter);
     }
 
     async createPedido(req: Request, res: Response) {

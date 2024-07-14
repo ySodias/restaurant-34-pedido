@@ -51,11 +51,6 @@ class PedidoRepository implements IPedidoRepository {
                             enumerador: true,
                         },
                     },
-                    // cliente: {
-                    //     select: {
-                    //         nome: true,
-                    //     },
-                    // },
                 },
             });
 
@@ -78,11 +73,6 @@ class PedidoRepository implements IPedidoRepository {
                     },
                 },
                 include: {
-                    // cliente: {
-                    //     select: {
-                    //         nome: true,
-                    //     },
-                    // },
                     statusPedido: {
                         select: {
                             enumerador: true,
@@ -112,11 +102,6 @@ class PedidoRepository implements IPedidoRepository {
                     },
                 },
                 include: {
-                    // cliente: {
-                    //     select: {
-                    //         nome: true,
-                    //     },
-                    // },
                     statusPedido: {
                         select: {
                             enumerador: true,
