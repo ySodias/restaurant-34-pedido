@@ -242,43 +242,12 @@ class PedidoController implements IPedidoController {
     }
 
     async updatePedido(req: Request, res: Response) {
-        const { body } = req;
+        const { statusPedido } = req.body;
         const { idPedido } = req.params;
 
-        const statusPedido = body?.statusPedido;
-
-        type UpdatePedidoDict = {
-            [key: string]: (idPedido: number) => Promise<any>;
-        };
-
-        const updatePedidoDict: UpdatePedidoDict = {
-            "Em Preparação":
-                this.pedidoUseCase.executeUpdatePedidoPreparacao.bind(
-                    this.pedidoUseCase
-                ),
-            Pronto: this.pedidoUseCase.executeUpdatePedidoPronto.bind(
-                this.pedidoUseCase
-            ),
-            Finalizado: this.pedidoUseCase.executeUpdatePedidoFinalizado.bind(
-                this.pedidoUseCase
-            ),
-        };
-
-        if (!statusPedido) {
-            return res
-                .status(400)
-                .json({ message: "statusPedido não informado" });
-        }
-
-        if (!idPedido) {
-            return res.status(400).json({ message: "idPedido não informado" });
-        }
-
         try {
-            const updateFunction = updatePedidoDict[statusPedido];
-            const update = await updateFunction(parseInt(idPedido));
-
-            return res.status(200).json({ update });
+            const pedidoAtualizado = await this.pedidoUseCase.executeUpdateStatusPedido(parseInt(idPedido), statusPedido);
+            return res.status(200).json(pedidoAtualizado);
         } catch (error: any) {
             return res.status(400).json({ message: error?.message });
         }

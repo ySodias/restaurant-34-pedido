@@ -8,7 +8,6 @@ export interface IPedidoUseCase{
   executeGetPedidosByStatus(idStatusPedido: number): Promise<Pedido[]>;
   executeGetPedidoFakeCheckout(status: string): Promise<Pedido[]>;
   executeAddProdutosAoPedido(produtosDoPedidoDTO: ProdutosDoPedidoDTO[]): Promise<any>;
-  
   executeDelete(idPedido: number): any;
   executeRemoveProdutoDoPedido(idPedido: number, idProdutos: number): any;
   executeUpdatePedidoPreparacao(idPedido: number): any;
@@ -16,4 +15,5 @@ export interface IPedidoUseCase{
   executeUpdatePedidoFinalizado(idPedido: number): any;
   executeGetProdutoDoPedido(idPedido: number): any;
   calculaValorDoPedido(idPedido: number): any;
+  executeUpdateStatusPedido(idPedido: number, statusPedido: string): any;
 }

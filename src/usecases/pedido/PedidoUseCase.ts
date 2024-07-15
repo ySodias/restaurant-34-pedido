@@ -3,11 +3,11 @@ import { NovoPagamentoDTO } from "../../dtos/NovoPagamentoDTO";
 import { ProdutosDoPedidoDTO } from "../../dtos/ProdutosDoPedidoDTO";
 import { Pedido } from "../../entities/Pedido";
 import { ProdutosDoPedido } from "../../entities/ProdutosDoPedido";
-import { EnumStatusPedido } from "../../enums/EnumStatusPedido";
 import { TipoPagamento } from "../../enums/TipoPagamento";
 import { IPedidoGateway, IPedidoUseCase, IProdutoDoPedidoGateway } from "../../interfaces";
 import { IPagamentoGateway } from "../../interfaces/gateway/IPagamentoGateway";
 import { IProdutoGateway } from "../../interfaces/gateway/IProdutoGateway";
+import { StatusPedidoEnum, getStatusPedidoPorDescricao } from "@/enums/EnumStatusPedido";
 
 class PedidoUseCase implements IPedidoUseCase {
     private produtosDoPedidoGateway: IProdutoDoPedidoGateway;
@@ -48,9 +48,8 @@ class PedidoUseCase implements IPedidoUseCase {
 
 
     async executeCreation(pedidoData: Pedido): Promise<Pedido> {
-        pedidoData.statusPedidoId = EnumStatusPedido.RECEBIDO.id;
+        pedidoData.statusPedidoId = StatusPedidoEnum.RECEBIDO;
         const pedidoCriado: Pedido = await this.pedidoGateway.createPedido(pedidoData);
-        this.queue.publish(this.pedidoQueue, pedidoCriado);
         return pedidoCriado;
     }
 
@@ -124,7 +123,7 @@ class PedidoUseCase implements IPedidoUseCase {
             const pedidoParaAtualizar: any = {
                 id: idPedido,
                 pagamentoId: pagamentoId,
-                statusPedido: EnumStatusPedido.FINALIZADO
+                statusPedido: StatusPedidoEnum.FINALIZADO
             }
             const pedido = await this.pedidoGateway.updatePedidoCompleto(pedidoParaAtualizar);
 
@@ -166,10 +165,43 @@ class PedidoUseCase implements IPedidoUseCase {
         }
     }
 
+    async executeUpdateStatusPedido(idPedido: number, statusPedido: string) {
+        if (!idPedido || !statusPedido) {
+            throw new Error("Erro ao atualizar status do pedido. Campos 'idPedido' e 'statusPedido' são obrigatórios.");
+        }
+
+        const pedido: Pedido = await this.pedidoGateway.getPedidoById(idPedido);
+
+        if (!pedido) {
+            throw new Error("Pedido não encontrado.");
+        }
+
+        try {
+            const statusEnum = getStatusPedidoPorDescricao(statusPedido);
+
+            if ([StatusPedidoEnum.EM_PREPARACAO, StatusPedidoEnum.PRONTO, StatusPedidoEnum.FINALIZADO].includes(statusEnum) && !pedido.pagamentoId) {
+                throw new Error(`O pagamento é necessário para mudar para o status '${statusPedido}'.`);
+            }
+
+            pedido.statusPedido = statusEnum;
+            const pedidoAtualizado = await this.pedidoGateway.updatePedidoCompleto(pedido);
+
+            if (statusEnum === StatusPedidoEnum.AGUARDANDO_PAGAMENTO) {
+                await this.queue.publish(this.pedidoQueue, pedidoAtualizado);
+            }
+
+            return pedidoAtualizado;
+
+        } catch (error) {
+            console.error("Erro ao atualizar o pedido:", error);
+            throw error;
+        }
+    }
+
     private orderPedidos(pedidos: Pedido[]): Pedido[] {
-        const pedidosEmPreparacao = pedidos.filter((pedido) => pedido.statusPedido.id == EnumStatusPedido.EM_PREPARACAO.id);
-        const pedidosPronto = pedidos.filter((pedido) => pedido.statusPedido.id == EnumStatusPedido.PRONTO.id);
-        const pedidosRecebido = pedidos.filter((pedido) => pedido.statusPedido.id == EnumStatusPedido.RECEBIDO.id);
+        const pedidosEmPreparacao = pedidos.filter((pedido) => pedido.statusPedidoId == StatusPedidoEnum.EM_PREPARACAO);
+        const pedidosPronto = pedidos.filter((pedido) => pedido.statusPedidoId == StatusPedidoEnum.PRONTO);
+        const pedidosRecebido = pedidos.filter((pedido) => pedido.statusPedidoId == StatusPedidoEnum.RECEBIDO);
 
         return [...pedidosPronto, ...pedidosEmPreparacao, ...pedidosRecebido];
     }

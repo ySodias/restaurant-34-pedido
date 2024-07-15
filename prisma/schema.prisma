@@ -10,7 +10,7 @@ datasource db {
 
 model Pedido{
   id Int @id @default(autoincrement())
-  clienteId Int 
+  clienteId Int
   pagamentoId String?
   statusPedidoId Int
   statusPedido StatusPedido @relation(fields: [statusPedidoId], references: [id])

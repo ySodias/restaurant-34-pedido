@@ -143,7 +143,7 @@ class PedidoRepository implements IPedidoRepository {
 
     async updatePedidoCompleto(pedido: Pedido): Promise<Pedido> {
         try {
-            const status = getDescricaoStatusPedido(pedido.statusPedido.id)
+            const status = getDescricaoStatusPedido(pedido.statusPedido)
             const pedidoResponse = await this.prismaClient.pedido.update({
                 where: {
                     id: pedido.id,
