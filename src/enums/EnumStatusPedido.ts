@@ -4,6 +4,7 @@ enum StatusPedidoEnum {
     PRONTO = 3,
     FINALIZADO = 4,
     AGUARDANDO_PAGAMENTO = 5,
+    ERRO_PAGAMENTO = 6,
 }
 
 const StatusPedidoDescricao: Record<StatusPedidoEnum, string> = {
@@ -12,10 +13,14 @@ const StatusPedidoDescricao: Record<StatusPedidoEnum, string> = {
     [StatusPedidoEnum.PRONTO]: "Pronto",
     [StatusPedidoEnum.FINALIZADO]: "Finalizado",
     [StatusPedidoEnum.AGUARDANDO_PAGAMENTO]: "Aguardando Pagamento",
+    [StatusPedidoEnum.ERRO_PAGAMENTO]: "Erro no Pagamento",
 };
 
-function getDescricaoStatusPedido(codigo: StatusPedidoEnum): string {
-    return StatusPedidoDescricao[codigo] || "Desconhecido";
+function getDescricaoStatusPedido(status: StatusPedidoEnum | number): string {
+    if (typeof status === "number") {
+        return StatusPedidoDescricao[status as StatusPedidoEnum] || "Desconhecido";
+    }
+    return StatusPedidoDescricao[status] || "Desconhecido";
 }
 
 function getStatusPedidoPorDescricao(descricao: string): StatusPedidoEnum {

@@ -242,11 +242,11 @@ class PedidoController implements IPedidoController {
     }
 
     async updatePedido(req: Request, res: Response) {
-        const { statusPedido } = req.body;
+        const { statusPedido, tipoPagamento } = req.body;
         const { idPedido } = req.params;
 
         try {
-            const pedidoAtualizado = await this.pedidoUseCase.executeUpdateStatusPedido(parseInt(idPedido), statusPedido);
+            const pedidoAtualizado = await this.pedidoUseCase.executeUpdateStatusPedido(parseInt(idPedido), statusPedido, tipoPagamento);
             return res.status(200).json(pedidoAtualizado);
         } catch (error: any) {
             return res.status(400).json({ message: error?.message });

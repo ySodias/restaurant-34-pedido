@@ -15,5 +15,5 @@ export interface IPedidoUseCase{
   executeUpdatePedidoFinalizado(idPedido: number): any;
   executeGetProdutoDoPedido(idPedido: number): any;
   calculaValorDoPedido(idPedido: number): any;
-  executeUpdateStatusPedido(idPedido: number, statusPedido: string): any;
+  executeUpdateStatusPedido(idPedido: number, statusPedido: string, tipoPagamento: string): any;
 }

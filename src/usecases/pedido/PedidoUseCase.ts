@@ -14,22 +14,27 @@ class PedidoUseCase implements IPedidoUseCase {
     private pedidoGateway: IPedidoGateway;
     private pagamentoGateway: IPagamentoGateway;
     private produtoGateway: IProdutoGateway;
-    private queue: IQueueAdapter;
-    private readonly pedidoQueue: string = process.env.PEDIDO_QUEUE as string;
+    private queueService: IQueueAdapter;
+
+    private readonly pedidoCriadoQueue: string = process.env.PEDIDO_CRIADO_QUEUE as string;
+    private readonly pagamentoCriadoQueue: string = process.env.PAGAMENTO_CRIADO_QUEUE as string;
+    private readonly erroPagamentoCriadoQueue: string = process.env.ERRO_PAGAMENTO_CRIADO_QUEUE as string;
 
     constructor(
         produtosDoPedidoGateway: IProdutoDoPedidoGateway,
         pedidoGateway: IPedidoGateway,
         pagamentoGateway: IPagamentoGateway,
         produtoGateway: IProdutoGateway,
-        queue: IQueueAdapter
+        queueService: IQueueAdapter
     ) {
         this.produtosDoPedidoGateway = produtosDoPedidoGateway;
         this.pedidoGateway = pedidoGateway;
         this.pagamentoGateway = pagamentoGateway;
         this.produtoGateway = produtoGateway;
-        this.queue = queue
+        this.queueService = queueService;
+        this.startConsumingMessages();
     }
+
     async executeDelete(idPedido: number) {
         try {
             // Obtém os itens do pedido
@@ -45,7 +50,6 @@ class PedidoUseCase implements IPedidoUseCase {
             throw new Error("Erro ao excluir itens do pedido.");
         }
     }
-
 
     async executeCreation(pedidoData: Pedido): Promise<Pedido> {
         pedidoData.statusPedidoId = StatusPedidoEnum.RECEBIDO;
@@ -165,7 +169,7 @@ class PedidoUseCase implements IPedidoUseCase {
         }
     }
 
-    async executeUpdateStatusPedido(idPedido: number, statusPedido: string) {
+    async executeUpdateStatusPedido(idPedido: number, statusPedido: string, tipoPagamento: string) {
         if (!idPedido || !statusPedido) {
             throw new Error("Erro ao atualizar status do pedido. Campos 'idPedido' e 'statusPedido' são obrigatórios.");
         }
@@ -187,7 +191,9 @@ class PedidoUseCase implements IPedidoUseCase {
             const pedidoAtualizado = await this.pedidoGateway.updatePedidoCompleto(pedido);
 
             if (statusEnum === StatusPedidoEnum.AGUARDANDO_PAGAMENTO) {
-                await this.queue.publish(this.pedidoQueue, pedidoAtualizado);
+                const  valor = await this.calculaValorDoPedido(pedidoAtualizado.id);
+                const payload = { ...pedidoAtualizado, valor, tipoPagamento}
+                await this.queueService.publish(this.pedidoCriadoQueue, payload);
             }
 
             return pedidoAtualizado;
@@ -196,6 +202,24 @@ class PedidoUseCase implements IPedidoUseCase {
             console.error("Erro ao atualizar o pedido:", error);
             throw error;
         }
+    }
+
+    async startConsumingMessages() {
+        await this.queueService.connect();
+
+        await this.queueService.consume(this.pagamentoCriadoQueue, async (message: any) => {
+            const { idPagamento, idPedido } = message;
+            const pedido: Pedido = await this.pedidoGateway.getPedidoById(idPedido);
+            pedido.pagamentoId = idPagamento;
+            const pedidoAtualizado = await this.pedidoGateway.updatePedidoCompleto(pedido);
+        });
+
+        await this.queueService.consume(this.erroPagamentoCriadoQueue, async (message: any) => {
+            const { idPedido } = message;
+            const pedido: Pedido = await this.pedidoGateway.getPedidoById(idPedido);
+            pedido.statusPedido = StatusPedidoEnum.ERRO_PAGAMENTO;
+            await this.pedidoGateway.updatePedidoCompleto(pedido);
+        });
     }
 
     private orderPedidos(pedidos: Pedido[]): Pedido[] {
