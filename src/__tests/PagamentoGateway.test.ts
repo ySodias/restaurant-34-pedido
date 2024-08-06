@@ -1,7 +1,4 @@
 
-import { ProdutoGateway } from "@/gateways/ProdutoGateway";
-import mockProdutoRestApi from "./mocks/MockProdutoRestAPI";
-import { IProdutoGateway } from "@/interfaces/gateway/IProdutoGateway";
 import { IPagamentoGateway } from "@/interfaces/gateway/IPagamentoGateway";
 import { PagamentoGateway } from "@/gateways/PagamentoGateway";
 import mockPagamentoRestAPI from "./mocks/MockPagamentoRestAPI";
@@ -12,12 +9,9 @@ describe("Produto do pedido", () => {
 
     let pagamentoGateway: IPagamentoGateway;
 
-    
-
     beforeAll(async () => {
-        pagamentoGateway = new PagamentoGateway(mockPagamentoRestAPI);        
+        pagamentoGateway = new PagamentoGateway(mockPagamentoRestAPI);
     });
-
 
     it("createPagamento", async () => {
         const novoPagamento = {
@@ -25,7 +19,7 @@ describe("Produto do pedido", () => {
             valor: 10,
             tipoPagamento: 'PIX' as TipoPagamento
         }
-        
+
         const pagamento: any = await pagamentoGateway.createPagamento(novoPagamento);
 
         expect(pagamento).toBeDefined();

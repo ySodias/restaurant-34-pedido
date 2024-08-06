@@ -1,4 +1,3 @@
-import { NovoPagamentoDTO } from "@/dtos/NovoPagamentoDTO";
 import ProdutoRestApi from "@/external/http/ProdutoRestApi";
 import { IProdutoRestAPI } from "@/interfaces/repositories/IProdutoRestAPI";
 
