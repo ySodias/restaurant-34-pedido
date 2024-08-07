@@ -1,30 +1,40 @@
+import { IQueueAdapter } from "@/interfaces/repositories/IQueueAdapter";
 import { NovoPagamentoDTO } from "../../dtos/NovoPagamentoDTO";
 import { ProdutosDoPedidoDTO } from "../../dtos/ProdutosDoPedidoDTO";
 import { Pedido } from "../../entities/Pedido";
 import { ProdutosDoPedido } from "../../entities/ProdutosDoPedido";
-import { EnumStatusPedido } from "../../enums/EnumStatusPedido";
 import { TipoPagamento } from "../../enums/TipoPagamento";
 import { IPedidoGateway, IPedidoUseCase, IProdutoDoPedidoGateway } from "../../interfaces";
 import { IPagamentoGateway } from "../../interfaces/gateway/IPagamentoGateway";
 import { IProdutoGateway } from "../../interfaces/gateway/IProdutoGateway";
+import { StatusPedidoEnum, getStatusPedidoPorDescricao } from "@/enums/EnumStatusPedido";
 
 class PedidoUseCase implements IPedidoUseCase {
     private produtosDoPedidoGateway: IProdutoDoPedidoGateway;
     private pedidoGateway: IPedidoGateway;
     private pagamentoGateway: IPagamentoGateway;
     private produtoGateway: IProdutoGateway;
+    private queueService: IQueueAdapter;
+
+    private readonly pedidoCriadoQueue: string = process.env.PEDIDO_CRIADO_QUEUE as string;
+    private readonly pagamentoCriadoQueue: string = process.env.PAGAMENTO_CRIADO_QUEUE as string;
+    private readonly erroPagamentoCriadoQueue: string = process.env.ERRO_PAGAMENTO_CRIADO_QUEUE as string;
 
     constructor(
         produtosDoPedidoGateway: IProdutoDoPedidoGateway,
         pedidoGateway: IPedidoGateway,
         pagamentoGateway: IPagamentoGateway,
-        produtoGateway: IProdutoGateway
+        produtoGateway: IProdutoGateway,
+        queueService: IQueueAdapter
     ) {
         this.produtosDoPedidoGateway = produtosDoPedidoGateway;
         this.pedidoGateway = pedidoGateway;
         this.pagamentoGateway = pagamentoGateway;
         this.produtoGateway = produtoGateway;
+        this.queueService = queueService;
+        this.startConsumingMessages();
     }
+
     async executeDelete(idPedido: number) {
         try {
             // Obtém os itens do pedido
@@ -41,9 +51,8 @@ class PedidoUseCase implements IPedidoUseCase {
         }
     }
 
-
     async executeCreation(pedidoData: Pedido): Promise<Pedido> {
-        pedidoData.statusPedidoId = EnumStatusPedido.RECEBIDO.id;
+        pedidoData.statusPedidoId = StatusPedidoEnum.RECEBIDO;
         const pedidoCriado: Pedido = await this.pedidoGateway.createPedido(pedidoData);
         return pedidoCriado;
     }
@@ -118,7 +127,7 @@ class PedidoUseCase implements IPedidoUseCase {
             const pedidoParaAtualizar: any = {
                 id: idPedido,
                 pagamentoId: pagamentoId,
-                statusPedido: EnumStatusPedido.FINALIZADO
+                statusPedido: StatusPedidoEnum.FINALIZADO
             }
             const pedido = await this.pedidoGateway.updatePedidoCompleto(pedidoParaAtualizar);
 
@@ -160,10 +169,63 @@ class PedidoUseCase implements IPedidoUseCase {
         }
     }
 
+    async executeUpdateStatusPedido(idPedido: number, statusPedido: string, tipoPagamento: string) {
+        if (!idPedido || !statusPedido) {
+            throw new Error("Erro ao atualizar status do pedido. Campos 'idPedido' e 'statusPedido' são obrigatórios.");
+        }
+
+        const pedido: Pedido = await this.pedidoGateway.getPedidoById(idPedido);
+
+        if (!pedido) {
+            throw new Error("Pedido não encontrado.");
+        }
+
+        try {
+            const statusEnum = getStatusPedidoPorDescricao(statusPedido);
+
+            if ([StatusPedidoEnum.EM_PREPARACAO, StatusPedidoEnum.PRONTO, StatusPedidoEnum.FINALIZADO].includes(statusEnum) && !pedido.pagamentoId) {
+                throw new Error(`O pagamento é necessário para mudar para o status '${statusPedido}'.`);
+            }
+
+            pedido.statusPedido = statusEnum;
+            const pedidoAtualizado = await this.pedidoGateway.updatePedidoCompleto(pedido);
+
+            if (statusEnum === StatusPedidoEnum.AGUARDANDO_PAGAMENTO) {
+                const  valor = await this.calculaValorDoPedido(pedidoAtualizado.id);
+                const payload = { ...pedidoAtualizado, valor, tipoPagamento}
+                await this.queueService.publish(this.pedidoCriadoQueue, payload);
+            }
+
+            return pedidoAtualizado;
+
+        } catch (error) {
+            console.error("Erro ao atualizar o pedido:", error);
+            throw error;
+        }
+    }
+
+    async startConsumingMessages() {
+        await this.queueService.connect();
+
+        await this.queueService.consume(this.pagamentoCriadoQueue, async (message: any) => {
+            const { idPagamento, idPedido } = message;
+            const pedido: Pedido = await this.pedidoGateway.getPedidoById(idPedido);
+            pedido.pagamentoId = idPagamento;
+            const pedidoAtualizado = await this.pedidoGateway.updatePedidoCompleto(pedido);
+        });
+
+        await this.queueService.consume(this.erroPagamentoCriadoQueue, async (message: any) => {
+            const { idPedido } = message;
+            const pedido: Pedido = await this.pedidoGateway.getPedidoById(idPedido);
+            pedido.statusPedido = StatusPedidoEnum.ERRO_PAGAMENTO;
+            await this.pedidoGateway.updatePedidoCompleto(pedido);
+        });
+    }
+
     private orderPedidos(pedidos: Pedido[]): Pedido[] {
-        const pedidosEmPreparacao = pedidos.filter((pedido) => pedido.statusPedido.id == EnumStatusPedido.EM_PREPARACAO.id);
-        const pedidosPronto = pedidos.filter((pedido) => pedido.statusPedido.id == EnumStatusPedido.PRONTO.id);
-        const pedidosRecebido = pedidos.filter((pedido) => pedido.statusPedido.id == EnumStatusPedido.RECEBIDO.id);
+        const pedidosEmPreparacao = pedidos.filter((pedido) => pedido.statusPedidoId == StatusPedidoEnum.EM_PREPARACAO);
+        const pedidosPronto = pedidos.filter((pedido) => pedido.statusPedidoId == StatusPedidoEnum.PRONTO);
+        const pedidosRecebido = pedidos.filter((pedido) => pedido.statusPedidoId == StatusPedidoEnum.RECEBIDO);
 
         return [...pedidosPronto, ...pedidosEmPreparacao, ...pedidosRecebido];
     }

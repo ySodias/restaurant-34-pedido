@@ -1,11 +1,6 @@
-import { Pedido } from "./Pedido";
-
-interface StatusPedido {
+export default interface StatusPedido {
     id: number;
-    pedido: Pedido[];
     enumerador: string;
     createdAt: Date;
     updatedAt: Date;
 }
-
-export default StatusPedido;

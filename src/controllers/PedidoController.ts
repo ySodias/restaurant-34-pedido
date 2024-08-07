@@ -1,3 +1,4 @@
+import { IQueueAdapter } from "@/interfaces/repositories/IQueueAdapter";
 import { ProdutosDoPedidoDTO } from "../dtos/ProdutosDoPedidoDTO";
 import { Pedido } from "../entities/Pedido";
 import { ProdutosDoPedido } from "../entities/ProdutosDoPedido";
@@ -34,13 +35,14 @@ class PedidoController implements IPedidoController {
         pedidoRepository: PedidoRepository,
         produtosDoPedidoRepository: ProdutosDoPedidoRepository,
         pagamentoRestAPI: PagamentoRestApi,
-        produtoRestAPI: ProdutoRestApi
+        produtoRestAPI: ProdutoRestApi,
+        queueAdapter: IQueueAdapter
     ) {
         this.pedidoGateway = new PedidoGateway(pedidoRepository);
         this.produtosDoPedidoGateway = new ProdutoDoPedidoGateway(produtosDoPedidoRepository);
         this.pagamentoGateway = new PagamentoGateway(pagamentoRestAPI);
         this.produtoGateway = new ProdutoGateway(produtoRestAPI);
-        this.pedidoUseCase = new PedidoUseCase(this.produtosDoPedidoGateway, this.pedidoGateway, this.pagamentoGateway, this.produtoGateway);
+        this.pedidoUseCase = new PedidoUseCase(this.produtosDoPedidoGateway, this.pedidoGateway, this.pagamentoGateway, this.produtoGateway, queueAdapter);
     }
 
     async createPedido(req: Request, res: Response) {
@@ -240,43 +242,12 @@ class PedidoController implements IPedidoController {
     }
 
     async updatePedido(req: Request, res: Response) {
-        const { body } = req;
+        const { statusPedido, tipoPagamento } = req.body;
         const { idPedido } = req.params;
 
-        const statusPedido = body?.statusPedido;
-
-        type UpdatePedidoDict = {
-            [key: string]: (idPedido: number) => Promise<any>;
-        };
-
-        const updatePedidoDict: UpdatePedidoDict = {
-            "Em Preparação":
-                this.pedidoUseCase.executeUpdatePedidoPreparacao.bind(
-                    this.pedidoUseCase
-                ),
-            Pronto: this.pedidoUseCase.executeUpdatePedidoPronto.bind(
-                this.pedidoUseCase
-            ),
-            Finalizado: this.pedidoUseCase.executeUpdatePedidoFinalizado.bind(
-                this.pedidoUseCase
-            ),
-        };
-
-        if (!statusPedido) {
-            return res
-                .status(400)
-                .json({ message: "statusPedido não informado" });
-        }
-
-        if (!idPedido) {
-            return res.status(400).json({ message: "idPedido não informado" });
-        }
-
         try {
-            const updateFunction = updatePedidoDict[statusPedido];
-            const update = await updateFunction(parseInt(idPedido));
-
-            return res.status(200).json({ update });
+            const pedidoAtualizado = await this.pedidoUseCase.executeUpdateStatusPedido(parseInt(idPedido), statusPedido, tipoPagamento);
+            return res.status(200).json(pedidoAtualizado);
         } catch (error: any) {
             return res.status(400).json({ message: error?.message });
         }

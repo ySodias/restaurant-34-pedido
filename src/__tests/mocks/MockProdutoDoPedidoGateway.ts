@@ -1,6 +1,5 @@
 import { ProdutoDoPedidoGateway } from "@/gateways/produtosDoPedido";
 import { IProdutoDoPedidoGateway } from "@/interfaces";
-import mockPedidoRepository from "./MockPedidoRepository";
 import mockProdutosDoPedidoRepository from "./MockProdutoDoPedidoRepository";
 import { ProdutosDoPedido } from "@/entities/ProdutosDoPedido";
 import { Pedido } from "@/entities/Pedido";
@@ -13,7 +12,7 @@ const produtoDoPedido = {
     pedidoId: 1,
     pedido: {} as Pedido,
     quantidade: 1,
-    valor: 5 
+    valor: 5
 }
 
 jest.spyOn(mockProdutoDoPedidoGateway, "deleteProdutosDoPedido")

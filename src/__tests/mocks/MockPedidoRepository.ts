@@ -2,13 +2,13 @@ import { IPedidoRepository } from '@/interfaces/repositories/IPedidoRepository';
 import { prisma } from '../jest.setup';
 import PedidoRepository from '@/external/repositories/PedidoRepository';
 import { Pedido } from '@/entities/Pedido';
-import { EnumStatusPedido } from '@/enums/EnumStatusPedido';
 import { ProdutosDoPedido } from '@/entities/ProdutosDoPedido';
+import { StatusPedidoEnum } from '@/enums/EnumStatusPedido';
 const mockPedidoRepository: IPedidoRepository = new PedidoRepository(prisma);
 
 const pedidoCriado: any = {
     id: 1,
-    statusPedido: EnumStatusPedido.RECEBIDO,
+    statusPedido: StatusPedidoEnum.RECEBIDO,
     statusPedidoId: 1,
     clienteId: 1,
     ProdutosDoPedido: {} as ProdutosDoPedido
@@ -48,18 +48,13 @@ jest.spyOn(mockPedidoRepository, "getPedidosByStatus")
                 },
             },
             include: {
-                // cliente: {
-                //     select: {
-                //         nome: true,
-                //     },
-                // },
                 statusPedido: {
                     select: {
                         enumerador: true,
                     },
                 },
             },
-        }) as Pedido[];
+        }) as unknown as Pedido[];
 }).mockResolvedValue([pedidoCriado]);
 
 jest.spyOn(mockPedidoRepository, "getPedidoByStatusFakeCheckout")
@@ -73,18 +68,13 @@ jest.spyOn(mockPedidoRepository, "getPedidoByStatusFakeCheckout")
                 },
             },
             include: {
-                // cliente: {
-                //     select: {
-                //         nome: true,
-                //     },
-                // },
                 statusPedido: {
                     select: {
                         enumerador: true,
                     },
                 },
             },
-        }) as Pedido[];
+        }) as unknown as Pedido[];
 }).mockResolvedValue([pedidoCriado]);
 
 jest.spyOn(mockPedidoRepository, "updatePedido")

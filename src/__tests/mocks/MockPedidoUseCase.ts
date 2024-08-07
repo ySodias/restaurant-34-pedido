@@ -4,16 +4,13 @@ import mockPedidoGateway from "./MockPedidoGateway";
 import mockProdutoDoPedidoGateway from "./MockProdutoDoPedidoGateway";
 import mockPagamentoGateway from "./MockPagamentoGateway";
 import mockProdutoGateway from "./MockProdutoGateway";
-import { EnumStatusPedido } from "@/enums/EnumStatusPedido";
+import mockQueueService from "./MockQueueService";
 
-const mockPedidoUseCase: IPedidoUseCase = new PedidoUseCase(mockProdutoDoPedidoGateway, mockPedidoGateway, mockPagamentoGateway, mockProdutoGateway);
+const mockPedidoUseCase: IPedidoUseCase = new PedidoUseCase(mockProdutoDoPedidoGateway, mockPedidoGateway, mockPagamentoGateway, mockProdutoGateway, mockQueueService);
 
 jest.spyOn(mockPedidoUseCase, "executeGetPedidoById")
     .mockImplementation(async (idPedido: number) => {
-
         return mockPedidoGateway.getPedidoById(idPedido);
-
     })
-
 
 export default mockPedidoUseCase;

@@ -13,7 +13,7 @@ const produtoDoPedido = {
     pedidoId: 1,
     pedido: {} as Pedido,
     quantidade: 1,
-    valor: 5 
+    valor: 5
 }
 
 jest.spyOn(mockProdutosDoPedidoRepository, "create")
@@ -42,7 +42,7 @@ jest.spyOn(mockProdutosDoPedidoRepository, "get")
             where: {
                 pedidoId: idPedido,
             },
-        }); 
+        });
     }).mockResolvedValue(produtoDoPedido);
 
 jest.spyOn(mockProdutosDoPedidoRepository, "delete")

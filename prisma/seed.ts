@@ -35,6 +35,22 @@ async function main() {
         },
     });
 
+    const statusPedido5 = await prisma.statusPedido.upsert({
+        where: { enumerador: 'Aguardando Pagamento' },
+        update: {},
+        create: {
+            enumerador: 'Aguardando Pagamento',
+        },
+    });
+
+    const statusPedido6 = await prisma.statusPedido.upsert({
+        where: { enumerador: 'Erro no Pagamento' },
+        update: {},
+        create: {
+            enumerador: 'Erro no Pagamento',
+        },
+    });
+
     // Pedidos
     const pedido1 = await prisma.pedido.upsert({
         where: { id: 1 },

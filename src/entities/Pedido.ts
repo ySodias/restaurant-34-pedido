@@ -1,4 +1,4 @@
-import StatusPedido from "./StatusPedido";
+import { StatusPedidoEnum } from "../enums/EnumStatusPedido"
 import { ProdutosDoPedido } from "./ProdutosDoPedido";
 import { BaseEntity } from "./BaseEntity";
 
@@ -7,7 +7,7 @@ interface Pedido extends BaseEntity {
   clienteId: number;
   pagamentoId?: string;
   statusPedidoId: number;
-  statusPedido: StatusPedido;
+  statusPedido: StatusPedidoEnum;
   ProdutosDoPedido: ProdutosDoPedido[];
 }
 

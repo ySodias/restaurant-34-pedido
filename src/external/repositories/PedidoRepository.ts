@@ -51,11 +51,6 @@ class PedidoRepository implements IPedidoRepository {
                             enumerador: true,
                         },
                     },
-                    // cliente: {
-                    //     select: {
-                    //         nome: true,
-                    //     },
-                    // },
                 },
             });
 
@@ -78,11 +73,6 @@ class PedidoRepository implements IPedidoRepository {
                     },
                 },
                 include: {
-                    // cliente: {
-                    //     select: {
-                    //         nome: true,
-                    //     },
-                    // },
                     statusPedido: {
                         select: {
                             enumerador: true,
@@ -112,11 +102,6 @@ class PedidoRepository implements IPedidoRepository {
                     },
                 },
                 include: {
-                    // cliente: {
-                    //     select: {
-                    //         nome: true,
-                    //     },
-                    // },
                     statusPedido: {
                         select: {
                             enumerador: true,
@@ -158,7 +143,7 @@ class PedidoRepository implements IPedidoRepository {
 
     async updatePedidoCompleto(pedido: Pedido): Promise<Pedido> {
         try {
-            const status = getDescricaoStatusPedido(pedido.statusPedido.id)
+            const status = getDescricaoStatusPedido(pedido.statusPedido || pedido.statusPedidoId)
             const pedidoResponse = await this.prismaClient.pedido.update({
                 where: {
                     id: pedido.id,
